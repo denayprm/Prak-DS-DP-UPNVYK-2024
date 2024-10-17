@@ -1,0 +1,211 @@
+---
+title: "Pertemuan 3"
+author: "Deni Permana"
+date: "2024-10-11"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# COnditional Expresions
+
+```{r}
+library(dslabs)
+data(murders)
+```
+
+Nampilin dataset
+
+```{r}
+View(murders)
+```
+
+Buat data murder rate
+
+```{r}
+murders$rate <- murders$total / murders$population * 100000
+```
+
+## IF-ELSE
+
+```{r}
+a <- 5
+if (a != 0){
+  print (1/a)
+} else {
+  print(" a tidak boleh nol")
+}
+```
+
+Mencari nilai murder rate yang diabwah 0,5
+
+```{r}
+ind <- which.min(murders$rate)
+if (murders$rate[ind] < 0.3){
+  print(murders$state[ind])
+} else {
+  print("Tidak Ada")
+}
+```
+
+## IFELSE
+
+ifelse(argumen1(kondisi), argumen2(ketika benar), arguen3(ketika salah))
+```{r}
+a <- 0
+ifelse(a > 0, 1/a, NA)
+```
+
+Fungsi ini tu biasanya lebih sering digunakan dalam vektor, karena dia bakal ngecek setiap nilai vektor secara berurutan
+
+```{r}
+ini_ventor <- c(0,1,2,-4,5)
+ifelse(ini_ventor > 0, 1/ini_ventor, NA)
+```
+
+# ANY & ALL
+Mereka ngecek vektor logika, any bernilai benar ketika 1 nilai saja ada yang BENAR, all bernilai benar ketika semua nilai harus BENAR
+
+```{r}
+z <- c(TRUE, TRUE, TRUE)
+any(z) # TRUE
+```
+
+```{r}
+all(z) #FALSE
+```
+
+
+## FUNCTION PADA R
+
+### 1. Function sederhana tanpa Argumen
+
+```{r}
+salam <- function() {
+  print("Selamat Sore UPNVJ")
+}
+
+#Memanggil fugsinya
+salam()
+```
+
+### 2. Function dengan Argumen
+
+```{r}
+penjumlahan <- function(a, b) {
+  hasil <- a + b
+  return(hasil)
+}
+
+penjumlahan(4, 9)
+```
+
+## 3. Function dengan nilai Default pada Argumennya
+
+```{r}
+pengurangan <- function( a, b=5){
+  hasil <- a-b
+  return(hasil)
+}
+
+# Memanggil dengan nilai defaultnya
+pengurangan(10, 3)
+```
+
+### 4. Fungsi Bawaan
+sum, mean, sort, hist, plot, sqrt
+```{r}
+# Menghitung nilai total
+sum(c(1,2,3,4,5))
+```
+
+```{r}
+#Menghitung Rata-Rata
+mean(c(1,2,3,4,5))
+```
+
+```{r}
+#Mengurutkan
+sort(c(1,2,3,4,5))
+```
+## FOR LOOP
+
+```{r}
+angka <- c(1,2,3,4,5)
+for  (i in angka){
+  print(i)
+}
+```
+
+```{r}
+for (i in angka) {
+  print(i^2)
+}
+```
+
+## Contoh dalam Data Frame
+
+```{r}
+data_siswa <- data.frame(
+nama = c("Andi", "Budi", "Citra", "Dewi"),
+matematika = c(85, 70, 90, 65),
+bahasa_inggris = c(80, 60, 88, 75)
+)
+
+print(data_siswa)
+```
+
+Menghitung nilai Rata-RAta dan Status Kelulusan (Rata2 >= 75)
+
+```{r}
+data_siswa$rata_rata <- NA
+data_siswa$status <- NA
+
+for (i in 1:nrow(data_siswa)) {
+  data_siswa$rata_rata[i] <- (data_siswa$matematika[i] + data_siswa$bahasa_inggris[i]) / 2
+  
+  if (data_siswa$rata_rata[i] >= 75) {
+    data_siswa$status[i] <- "Lulus"
+  } else {
+    data_siswa$status[i] <- "Tidak Lulus"
+  }
+}
+
+print(data_siswa)
+```
+
+## SAPPLY
+ 
+ Fungsi yang digunkan untuk menrapkan suatu fungsi pada elemen-elemen objek(vektor, list, dan data frame)
+ 
+## Penggunaan Sapply()
+ 
+ vektor
+ 
+```{r}
+x <- 1:10 #kita mau cari akarnya
+sapply(x, sqrt)
+```
+ 
+ Dara Frame
+ 
+```{r}
+total_pendapatan <- data.frame(
+apel = c(7,9,10,8,6),
+pisang = c(12,13,11,14,15)
+)
+
+print(total_pendapatan)
+```
+ 
+ Menghitung Rata-Rata dari DataFrame total_pendapatan
+ 
+```{r}
+rata2_pendapatan <- sapply(total_pendapatan, mean)
+
+print(rata2_pendapatan)
+```
+ 
+ 
