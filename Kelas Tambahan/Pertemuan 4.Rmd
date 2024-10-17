@@ -1,0 +1,12 @@
+---
+title: "Pertemuan 4"
+author: "Deni Permana"
+date: "2024-10-17"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Saya Deni Permana
