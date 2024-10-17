@@ -9,4 +9,211 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Saya Deni Permana
+# Pertemuan 4 - Tidyverse
+
+Tidyverse adalah kumpulan package di R yang dirancang untuk memudahkan manipulasi, eksplorasi,dan visualisasi data.\
+Package yang terdapat pada tidyverse adalah ggplot, dplyr, readr, purrr, tibble, stringr, dan forcats.
+
+Di pertemuan ini,kita hanya akan praktik menggunakan package dplyr saja.\
+dplyr adalah salah satu package pada tidyverse untuk memanipulasi dan memfilter data dalam bentuk data frame.
+
+## Manipulasi Data Frame
+
+Pada praktik ini kita akan menggunakan dataset murders (lagi).\
+Selain mengimport packgae dslabs untuk dataset, kita juga perlu mengimport package dplyr.
+
+```{r}
+library(dslabs)
+library(dplyr)
+
+data(murders)
+```
+
+Kita tampilin dataset-nya
+
+```{r}
+View(murders)
+```
+
+### mutate()
+
+Fungsi mutate() digunakan untuk membuat atau memodifikasi kolom dalam sebuah data frame.
+
+Sebagai contoh, misalkan disini kita mau nambah kolom baru namanya " tingkat_pembuhuhan".\
+Kalau total pembunuhan \>= 100, maka tingkat_pembunuhan mempunyai nilai "banyak",\
+Kalau kurang dari 100, tingkat_pembunuhan akan beri nilai "dikit".
+
+```{r}
+murders = mutate(murders, tingkat_pembunuhan = ifelse(total >= 100, "banyak", "dikit")) # Nambah kolom tingkat_pembunuhan
+```
+
+### filter()
+
+Fungsi filter() digunakan untuk menyaring baris data frame berdasarkan kondisi tertentu.\
+Misalkan di sini kita mau nampilin data yang "tingkat_pembunuhan"-nya bernilai "banyak".
+
+```{r}
+# filter(murders, tingkat_pembunuhan == "banyak")
+filter(murders, population > 10^7)
+```
+
+### Operator Pipe (%\>%)
+
+Sebelum kita melangkah lebih jauh, ada baiknya kita kenalan dulu sama operator pipe.\
+Operator pipe (%\>%) digunakan untuk menghubungkan beberapa perintah secara berurutan.\
+Pipe memungkinkan kita untuk mengalirkan output dari satu fungsi sebagai input ke fungsi berikutnya.
+
+Misalkan kita mau melakukan beberapa operasi secara beruurtan:\
+flter yang populasinya \>= 10.000.000, terus nambah kolom baru, terus tampilkan hasilnya 3 teratas.
+
+Contoh gapake pipe:
+
+```{r}
+#Difilter terus simpan ke variabel "data_hasil_filter"
+data_hasil_filter = filter(murders, population >= 10000000)
+
+#Hasil filter di-mutete terus simpan ke variabel "data_hasil_mutate"
+data_hasil_mutate = mutate(data_hasil_filter, kepadatan = "tinggi")
+
+# Menampilkan 3 data teratas setelah di mutate
+head(data_hasil_mutate, 3)
+```
+
+Contoh kalo pake pipe:
+
+```{r}
+murders %>%
+  filter(population >= 10000000) %>%
+  mutate(kepadatan = "tinggi") %>%
+  head(3)
+```
+#### Operator pipe - contoh 2
+1. FIlter populasi > 10  jt
+2. Nambah kolom "kepadatan" isinya kalo populasi > 20 jt = "tinggi:, "rendah"
+3. Nampilin 3 data teratas
+
+Contoh ga pake pipe 2:
+
+```{r}
+#Filter populasi > 10 jt, terus simpan ke dalam variabel " data_hasil_filter_2"
+data_hasil_filter_2 = filter(murders, population > 10^7)
+
+#Hasil filter di-mutate terus disimpan ke dalam variabel "data_hasil_muatet_2"
+data_hasil_mutate_2 = mutate(
+  data_hasil_filter_2,
+  kepadatan = ifelse(population > 20000000, "tinggi", "rendah")
+)
+
+head(data_hasil_mutate_2, )
+
+```
+Pake operator pipe 2:
+```{r}
+murders %>% filter(population > 10^7) %>%
+  mutate(kepadatan = ifelse(population > 20000000, "tinggi", "rendah")) %>%
+  head(3)
+```
+
+Kalo diliat, dengan menggunakan pipe, kodingan kita jadi lebih ringkas.\
+Kita juga gaperlu bikin variabel baru tiap kita ngelakuin operasi.\
+Ingat prinsip DRY (Don't Repeat Yourself) pada pemrograman
+
+### select()
+
+Fungsi select() digunkan untuk:
+
+- Memilih kolom tertentu dari data frame.
+- Menghapus kolo, 
+- Mengua uurtan kolom.
+Misalkan kita mau nampilin kolom state sama populasinya doang.
+
+```{r}
+murders %>% select(state, total) 
+```
+
+Misalkan kita mau nampilin semua kolom selain kolom "abb". kita bisa menambhkan minus (-) pada kolom yang ingin dikecualikan.
+
+```{r}
+murders %>% select(-abb)
+```
+
+## Sorting data frame
+
+## arrange()
+
+Fungsi arrange() digunkan untuk mengurutkan baris dalam sebuah data frame.
+
+Misalkan kita mau ngurutin data murders berdasakan populasinya.
+
+```{r}
+# Ascending (dari dikit ke banyak)
+murders %>% arrange(population)
+```
+
+```{r}
+# Descending (dari banyak ke dikit)
+murders %>% arrange(desc(population))
+```
+
+Misalkan kita mau ngurutin dari populasi, terus kalo ada data yang populasinya sama maka akan diurutkan berdasarkan total
+
+```{r}
+murders %>% arrange(population, total)
+```
+
+### top_n()
+
+Fungsi top_n() digunakan untuk menampilkan baris teratas/terbawah dari data frame.\
+Bedanya dengan fungsi head() adalah dengan pada head(), data diurutkan berdasarkan urutan data yang sudah ada,\
+Sedangkan, pada top_n kita atur data teratas/terbawah berdasarkan kolomnya.
+
+Sebagai contoh, di sini kita akan menampilkan 4 data teratas dan terbawah berdasarkan total pembunuhan.
+
+```{r}
+murders %>% top_n(4, total) #Data Teratas
+```
+
+```{r}
+murders %>% top_n(-2, total) #Data Terbawah
+```
+
+Catatan:\
+Data yang diambil oleh top_n() tidak otomatis terurut karena fungsi ini hanya memilih sejumlah baris dengan nilai terbesar atau terkecil dari kolom tertentu, tanpa mengubah urutan asli dari data frame.
+
+## Menghitung Data Frame
+
+### summarize()
+
+Fungsi summarize() digunakan untuk menghitung ringkasan statistik dari data, seperti rata-rata (mean), jumlah (sum), standar deviasi (sd), dan banyak baris.
+
+Misalkan, kita mau ngitung rata-rata, standar deviasi, dan jumlah kasus pembunuhan pada data murders.
+
+```{r}
+murders %>% summarize(
+  rata_rata = mean(total),
+  standar_deviasi = sd(total),
+  jumlah = sum(total)
+)
+```
+
+Dari data di atas, dapat disimpulkan bahwa dataset "murders" memiliki rata-rata 184 kasus pembunuhan, standar deviasi bernilai 236.126, dan total kasus pembunuhan sebesar 9403.
+
+### group_by()
+
+Fungsi group_by() digunakan untuk:
+
+-   Mengelompokkan data berdasarkan kolom tertentu.
+-   Membantu dalam melakukan analisis per kelompok, biasanya digabung sama fungsi summarize(.
+
+Misalkan di sini kita mau ngitung rata-rata total kasus pembunuhan berdasarkan region.
+
+```{r}
+murders %>%
+  group_by(region) %>%
+  summarise(rata_rata = mean(total))
+```
+
+Penjelasan:
+
+-   Pertama, kita kelompokkan dulu datanya berdasarkan region menggunakan fungsi group_by().
+-   Kedua, setelah dikelompokkan, kita hitung rata-rata total kasus pembunuhan pada tiap region. Untuk menghitung rerata, kita bisa menggunakan fungsi mean() dan menyimpannya ke dalam variabel/kolom bernama rata_rata.
