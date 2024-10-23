@@ -1,0 +1,128 @@
+---
+title: "Latihan Kuis Susulan"
+author: "plirapli"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+
+## Baca Petunjuk Terlebih Dahulu!
+
+1.  Kerjakan soal-soal yang ada.
+2.  Jawablah dengan mengisi chunk dibawah soal.
+
+## Soal
+
+1.  Import package dslabs dan dplyr. Lalu gunakan data 'us_contagious_diseases' pada library dslabs! **point 5**
+
+```{r No1}
+# Load library dslabs dan dplyr
+library(dslabs)
+library(dplyr)
+
+# Memakai dataset us_contagious_diseases dari library dslabs
+data("us_contagious_diseases")
+```
+
+2.  Tampilkan semua nama kolom pada data frame yang ada! **point 5**
+
+```{r No2}
+# Menampilkan semua kolom dari dataframe, bisa pakai colnames() atau namse()
+colnames(us_contagious_diseases)
+```
+
+3.  Tampilkan tipe data pada kolom penyakit! **point 8**
+
+```{r No3}
+class(us_contagious_diseases$disease)
+```
+
+4.  Tampilkan 10 data penyakit rubella teratas yg terjadi antara tahun 2000-2005! diurutkan berdasarkan jumlah kasusnya! **point 12**
+
+```{r No4}
+us_contagious_diseases %>% 
+  filter(disease == 'Rubella' & year > 2000 & year < 2005) %>%
+  arrange(desc(count)) %>%
+  head(10)
+```
+
+```         
+Penjelasan kode
+Baris 1: Kita filter dulu supaya data hanya memiliki disease rubella di antara tahun 2000-2005 pake fungsi filter().
+Baris 2: Setelah difilter, kita urutkan data dengan fungsi arrange()
+Baris 3: Tampilkan 10 data pertama dengan fungsi head(10)
+```
+
+5.  Klasifikasikan data tersebut berdasarkan jumlah kasusnya dengan kondisi:
+
+    -   Jumlah kasus kurang dari 500 dikategorikan sebagai "Biasa"
+    -   Jumlah kasus lebih dari 2000 dikategorikan sebagai "Azab
+    -   Jumlah kasus antara kedua kondisi diatas dikategorikan sebagai "Cobaan"\
+
+    Masukkan ke dalam sebuah variabel bernama category. **point 15**
+
+```{r No5}
+# Bikin variabel baru namanya "category" buat nyimpen kondisi dari jumlah penyakit.
+category = ifelse(us_contagious_diseases$count < 500, "Biasa", 
+           ifelse(us_contagious_diseases$count > 2000, "Azab", "Cobaan"))
+```
+
+6.  Tambahkan kolom baru pada data 'us_contagious_diseases' bernama "category".\
+    Kolom tersebut berisi implementasi no. 5\
+    Tambahkan juga kolom baru bernama "rate" yang berisi hasil bagi jml kasus dengan populasi dikalikan 100rb! **point 15**
+
+```{r No6}
+us_contagious_diseases %>% 
+  mutate(category = category) %>%
+  mutate(rate = count / population * 10^5) %>%
+```
+
+```
+Penjelasan kode
+Baris 1: Memilih data us_contagious_diseases
+Baris 2: Menambahkan kolom baru bernama "category" di data us_contagious_diseases dengan fungsi mutate().
+Baris 3: Menambahkan kolom baru bernama "rate" di data us_contagious_diseases dengan fungsi mutate().
+```
+
+7.  Kelompokkan data berdasarkan negara bagian (state) dan hitung rata-rata kasus per negara bagian!\
+    Simpan data frame ke dalam variabel bernama new_us_contagious_diseases **point 18**
+
+```{r No7}
+new_us_contagious_diseases = us_contagious_diseases %>% 
+  group_by(state) %>%
+  summarize(rerata_kasus = mean(count))
+```
+
+```
+Penjelasan kode
+Baris 1: Membuat variabel bernama "new_us_contagious_diseases" untuk menyimpan hasil perhitungan.
+Baris 2: Data dikelompokkan berdasarkan state dengan fungsi group_by().
+Baris 3: Menghitung rata-rata kasus untuk setiap state.
+```
+
+8.  Lakukan visualisasi pada hasil nomor 7 dengan sumbu x berisi state dan sumbu y berisi total kasus!\
+    Beri judul "Total kasus per negara bagian"\
+    (Hint: menggunakan barplot) **point 22**
+
+```{r No8}
+# Buat variabel bernama state untuk menyimpan daftar state
+state = new_us_contagious_diseases$state
+
+# Buat variabel bernama rata_rata untuk menyimpan hasil perhitungan rata-rata.
+# Nama "rerata_kasus" disesuaikan dengan nama variabel yang dibuat pada no. 7
+rata_rata = new_us_contagious_diseases$rerata_kasus
+
+# Membuat barplot dengan nama state sebagai sumbu x dan rata-rata kasus sebagai sumbu y.
+barplot(
+  rata_rata ~ state,
+  las = 2, # <- buat nge-rotate x label biar semua labelnya keliatan
+  xlab = "",
+  ylab = "Total Kasus",
+  main = "Total Kasus per Negara Bagian"
+)
+```

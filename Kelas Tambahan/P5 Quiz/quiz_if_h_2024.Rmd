@@ -185,36 +185,44 @@ View(video_game_sales)
 1.  Load dplyr library! (3%)
 
 ```{r}
-# No. 1
+library(dplyr)
 ```
 
 2.  Show the top 5 best-selling games in the US for games released before 2000.\
     Show only the columns for the game name and total sales in the US. (10%)
 
 ```{r}
-# No. 2
+video_game_sales %>%
+  filter(year < 2000) %>%
+  arrange(desc(us_sales)) %>%
+  select(name, us_sales) %>%
+  head(5)
 ```
 
 3.  Show all columns name on video_game_sales dataset! (5%)
 
 ```{r}
-# No. 3
+names(video_game_sales)
 ```
 
 4.  Show the data type of the "genre" column.\
     At the bottom of the code, explain why the "genre" column uses this data type. (10%)
 
 ```{r}
-# No. 4
+class(video_game_sales$genre)
 ```
 
-Explanation: ...
+Explanation: Genre column has factor data type because it stores categorical data, with 11 different genres in the dataset.
 
 5.  Show the top 5 games on the "X360" platform sorted by the most recent release year.\
     Show all columns except for the "us_sales" column. (11%)
 
 ```{r}
-# No. 5
+video_game_sales %>%
+  filter(platform == "X360") %>%
+  arrange(desc(year)) %>%
+  select(-us_sales) %>%
+  head(5)
 ```
 
 6.  Create a classification in the dataframe based on "us_sales" with the following conditions:
@@ -226,14 +234,20 @@ Explanation: ...
     Store the result in a new variable called 'sales_category'. (12%)
 
 ```{r}
-# No. 6
+sales_category = ifelse(video_game_sales$us_sales > 10, "Profit",
+                         ifelse(video_game_sales$us_sales > 5, "Loss", "Moderate"))
+sales_category
 ```
 
 7.  Add the "sales_category" column as a new column to the dataframe.\
     Display the top 7 data entries sorted by global_sales. (12%)
 
 ```{r}
-# No. 7
+video_game_sales= mutate(video_game_sales, sales_category)
+
+video_game_sales %>%
+  arrange(desc(global_sales)) %>%
+  head(7)
 ```
 
 8.  Take 6 entries (rows) from each category in the 'sales_category' classification.\

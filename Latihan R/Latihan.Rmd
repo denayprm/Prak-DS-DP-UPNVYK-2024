@@ -1,0 +1,31 @@
+---
+title: "Latihan"
+author: "Deni Permana"
+date: "2024-10-22"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#penghasilan satu kecamatan
+penghasilan <- rnorm(1000, 3000000, 250000) #rnorm: random angka (n, mean, sd)
+
+hist(penghasilan)
+```
+
+```{r}
+# memasukan 1 orang penghasilan 7 juta
+baru <- 7e+08
+penghasilan.baru <- append(penghasilan, baru)
+
+median(penghasilan)
+median(penghasilan.baru)
+
+# Perbedaan mean sangat berpengaruh, karena sensitif terhadap outlier
+mean(penghasilan)
+mean(penghasilan.baru)
+```
+

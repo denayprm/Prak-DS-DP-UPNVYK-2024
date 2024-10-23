@@ -240,10 +240,10 @@ video_game_sales %>%
 
 ```{r}
 # No. 6
-sales_category2 = ifelse(video_game_sales$us_sales > 10, "Profit",
+sales_category = ifelse(video_game_sales$us_sales > 10, "Profit",
                  ifelse(video_game_sales$us_sales < 5, "Loss", "Moderate"))
 
-sales_category2
+sales_category
 ```
 
 7.  Add the "sales_category" column as a new column to the dataframe.\
