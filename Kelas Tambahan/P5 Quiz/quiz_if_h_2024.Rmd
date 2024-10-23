@@ -257,20 +257,84 @@ video_game_sales %>%
     (The resulting dataframe "new_video_game_sales" will contain 18 rows).
 
 ```{r}
-# No. 8
+# manual
+profit_games = video_game_sales %>% filter(sales_category == "Profit") %>% head()
+moderate_games = video_game_sales %>% filter(sales_category == "Moderate") %>% head()
+loss_games = video_game_sales %>% filter(sales_category == "Loss") %>% head()
+
+new_video_game_sales = data.frame(
+  name = c(
+    profit_games$name,
+    moderate_games$name,
+    loss_games$name
+  ),
+  platform = c(
+    profit_games$platform,
+    moderate_games$platform,
+    loss_games$platform
+  ),
+  year = c(
+    profit_games$year,
+    moderate_games$year,
+    loss_games$year
+  ),
+  genre = c(
+    profit_games$genre,
+    moderate_games$genre,
+    loss_games$genre
+  ),
+  us_sales = c(
+    profit_games$us_sales,
+    moderate_games$us_sales,
+    loss_games$us_sales
+  ),
+  global_sales = c(
+    profit_games$global_sales,
+    moderate_games$global_sales,
+    loss_games$global_sales
+  ),
+  sales_category = c(
+    profit_games$sales_category,
+    moderate_games$sales_category,
+    loss_games$sales_category
+  )
+)
+
+new_video_game_sales
+
+#pake sample_n
+new_video_game_sales_2 = video_game_sales %>%
+  group_by(sales_category) %>%
+  sample_n(6)
+
+new_video_game_sales_2
+
 ```
 
 9.  Display the average and total of global_sales grouped by genre! (12%)
 
 ```{r}
-# No. 9
+result = video_game_sales %>%
+  group_by(genre) %>%
+  summarise(
+    avg = mean(global_sales),
+    total = sum(global_sales)
+  )
+result
 ```
 
 10. Create a barplot with the x-axis representing the name of the genre & the\
     y-axis representing the average sales from the results of question 9! (10%)
 
 ```{r}
-# No. 10
+barplot(
+  result$avg~result$genre,
+  las = 2,
+  ylab = "",
+  xlab = "Average Sales",
+  main = "Average Global Sales by Genre"
+  
+)
 ```
 
 11. Create a histogram with the following condition:
@@ -281,9 +345,14 @@ video_game_sales %>%
     Below the code chunk, write a conclusion that can be drawn from the histogram you created! (13%)
 
 ```{r}
-# No. 11
+hist(
+  video_game_sales$year,
+  main = "Video Game Released per Year",
+  ylab = "Number",
+  xlab = "Year"
+)
 ```
 
-Conclusion: ...
+Conclusion: Based on the histogram above, the years 2005 to 2010 were when the most video games were released.
 
 FIGHTING
