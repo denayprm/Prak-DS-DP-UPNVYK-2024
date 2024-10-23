@@ -28,4 +28,69 @@ median(penghasilan.baru)
 mean(penghasilan)
 mean(penghasilan.baru)
 ```
+# Matrix
+```{r}
+bil <- 1:20
+# bil
+
+matrix.bil <- matrix(bil)
+# matrix.bil
+
+matrix.bil2 <- matrix(bil,byrow = T,  nrow = 4)
+# matrix.bil2
+
+#SAHAM
+
+TLKM <- c(4000, 4025, 4005, 4010)
+DENI <- c(500, 515, 580, 550)
+
+saham <- c(TLKM, DENI)
+# saham
+
+matrix.saham <- matrix(saham, byrow= T, nrow = 2)
+# matrix.saham
+
+hari <- c("Senin", "Selasa", "Rabu", "Kamis")
+nama.saham <- c("TLKM", "DENI")
+
+colnames(matrix.saham) <- hari # Menamai kolom
+rownames(matrix.saham) <- nama.saham # Menamai Baris
+# View(matrix.saham)
+
+DENAY <- c(5010, 5100, 5025, 5125)
+saham.baru <- rbind(matrix.saham, DENAY)
+
+colSums(saham.baru)
+rowSums(saham.baru)
+colMeans(saham.baru)
+rowMeans(saham.baru)
+
+Rataan <- rowMeans(saham.baru)
+saham.baru <- cbind(saham.baru, Rataan)
+
+```
+```{r}
+bil.matrix <- matrix(1:25, byrow=T, nrow= 5)
+# bil.matrix
+# 
+# bil.matrix + bil.matrix
+# bil.matrix * bil.matrix
+# 1 / bil.matrix
+# bil.matrix ^ 2
+# 
+# # bil.matrix %+% bil.matrix
+# bil.matrix %*% bil.matrix
+# 1 %/% bil.matrix
+# # bil.matrix %^% 2
+
+#SLICING dan INDEXING
+# bil.matrix[baris, kolom]
+bil.matrix[]
+bil.matrix[1, ]
+bil.matrix[1:3, ]
+bil.matrix[c(1,3,4), ]
+bil.matrix[ , c(3,4,5)]
+```
+
+
 
