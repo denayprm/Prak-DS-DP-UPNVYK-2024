@@ -44,6 +44,7 @@ index_urutan_asc = order(murders$total)
 index_urutan_desc = order(murders$total, decreasing = TRUE)
 
 index_urutan_asc
+index_urutan_desc
 ```
 ```{r}
 # index_urutan_desc
@@ -52,7 +53,7 @@ murders$state[index_urutan_desc]
 ## Fungsi Rank()
 
 ```{r}
-x <- c(5,2,9,1,7)
+x <- c(0,5,2,9,1,7)
 rank(x)
 ```
 
@@ -69,12 +70,12 @@ terkecil <- min(murders$total)
 index_terbesar <- which.max(murders$total)
 index_terkecil <- which.min(murders$total)
 
-# terbesar
-# terkecil
-
+terbesar
+terkecil
+cat("\n")
 index_terbesar
 index_terkecil
-
+cat("\n")
 murders$state[index_terbesar]
 murders$state[index_terkecil]
 ```
@@ -88,12 +89,12 @@ populasi = murders$population / 10^6
 total = murders$total
 
 plot (
-  populasi,
-  total,
+  populasi, total,
   main = "Total Pembunuhan Tiap Populasi", #Judul
   xlab = "Populasi (Per 1 Juta Jiwa)",
   ylab = "Total Pembunuhan",
-  pch = 19
+  pch = 19,
+  col = "red"
 )
 
 ```
@@ -110,13 +111,14 @@ data_bbm = data.frame(
     7400, 6550
   )
 )
+# View(data_bbm)
 
 # data_bbm
 plot(
   data_bbm$tahun,
-  data_bbm$harga, 
+  data_bbm$harga,
   type = "l",
-  # type = "p"
+  # type = "p",
   main= "Harga Pemium Tahun 2000-2016"
 )
 

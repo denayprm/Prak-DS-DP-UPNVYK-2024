@@ -7,7 +7,6 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 ```
 
 ## Intro
@@ -22,12 +21,10 @@ knitr::opts_chunk$set(echo = TRUE)
 1.  Import package dslabs dan dplyr. Lalu gunakan data 'us_contagious_diseases' pada library dslabs! **point 5**
 
 ```{r}
-#load library
 library(dslabs)
 library(dplyr)
 
-#use data
-data("us_contagious_diseases")
+data(us_contagious_diseases)
 ```
 
 2.  Tampilkan semua nama kolom pada data frame yang ada! **point 5**
@@ -39,17 +36,19 @@ colnames(us_contagious_diseases)
 3.  Tampilkan tipe data pada kolom penyakit! Jelaskan mengapa kolom penyakit memakai tipe data tersebut! **point 8**
 
 ```{r}
-class(us_contagious_diseases$disease)
+# class(us_contagious_diseases$disease)
+str(us_contagious_diseases)
+# us_contagious_diseases$disease
 ```
 
-Penjelasan: Karena data kategorikal
+Penjelasan: Karena berisi data kategorikal, dengan 7 kombinasi
 
 4.  Tampilkan 10 data penyakit rubella teratas yg terjadi antara tahun 2000-2005! diurutkan berdasarkan jumlah kasusnya! **point 12**
 
 ```{r}
 us_contagious_diseases %>%
-  filter(disease == "Rubella" & year > 2000 & year < 2005) %>%
-  arrange(desc(count)) %>%
+  filter(disease == "Rubella", year >= 2000, year <= 2005) %>%
+  arrange(desc(count))%>%
   head(10)
 ```
 
@@ -63,9 +62,8 @@ us_contagious_diseases %>%
 
 ```{r}
 category = ifelse(us_contagious_diseases$count < 500, "Biasa", 
-                  ifelse(us_contagious_diseases$count > 2000, " Azab", "Cobaan"))
-category %>%
-  head(100)
+           ifelse(us_contagious_diseases$count > 2000, "Azab", "Cobaan"))
+head(category)
 ```
 
 6.  Tambahkan kolom baru pada data 'us_contagious_diseases' bernama "category".\
@@ -73,18 +71,17 @@ category %>%
     Tambahkan juga kolom baru bernama "rate" yang berisi hasil bagi jumlah kasus dengan populasi dikalikan 100000! **point 15**
 
 ```{r}
-us_contagious_diseases %>%
+us_contagious_diseases %>% 
   mutate(category = category) %>%
-  mutate(rate = count / population * 100000)
+  mutate(rate = count / population * 10^5)
 ```
 
 7.  Kelompokkan data berdasarkan negara bagian (state) dan hitung rata-rata kasus per negara bagian! Simpan data frame ke dalam variabel bernama new_us_contagious_diseases  **point 18**
 
 ```{r}
-new_us_contagious_diseases = us_contagious_diseases %>%
+new_us_contagious_diseases = us_contagious_diseases %>% 
   group_by(state) %>%
-  summarize( rerata_kasus = mean(count))
-new_us_contagious_diseases
+  summarize(rerata_kasus = mean(count))
 ```
 
 8.  Lakukan visualisasi pada hasil nomor 7 dengan sumbu x berisi state dan sumbu y berisi total kasus! \
@@ -92,20 +89,19 @@ new_us_contagious_diseases
     (Hint: menggunakan barplot) **point 22**
 
 ```{r}
-#state
+# Buat variabel bernama state untuk menyimpan daftar state
 state = new_us_contagious_diseases$state
 
-#rata2
+# Buat variabel bernama rata_rata untuk menyimpan hasil perhitungan rata-rata.
+# Nama "rerata_kasus" disesuaikan dengan nama variabel yang dibuat pada no. 7
 rata_rata = new_us_contagious_diseases$rerata_kasus
 
-#barplot
+# Membuat barplot dengan nama state sebagai sumbu x dan rata-rata kasus sebagai sumbu y.
 barplot(
   rata_rata ~ state,
-  las = 2,
-  ylab = "",
-  xlab = "Total Kasus",
-  main = "Total Kasus Per Negara Bagian",
-  col="yellow"
+  las = 2, # <- buat nge-rotate x label biar semua labelnya keliatan
+  xlab = "",
+  ylab = "Total Kasus",
+  main = "Total Kasus per Negara Bagian"
 )
 ```
-

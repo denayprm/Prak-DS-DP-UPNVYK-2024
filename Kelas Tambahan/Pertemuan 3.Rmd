@@ -31,7 +31,7 @@ murders$rate <- murders$total / murders$population * 100000
 ## IF-ELSE
 
 ```{r}
-a <- 5
+a <- 4
 if (a != 0){
   print (1/a)
 } else {
@@ -39,11 +39,11 @@ if (a != 0){
 }
 ```
 
-Mencari nilai murder rate yang diabwah 0,5
+Mencari nilai murder rate yang dibawah 0,5
 
 ```{r}
 ind <- which.min(murders$rate)
-if (murders$rate[ind] < 0.3){
+if (murders$rate[ind] < 0.5){
   print(murders$state[ind])
 } else {
   print("Tidak Ada")
@@ -54,7 +54,7 @@ if (murders$rate[ind] < 0.3){
 
 ifelse(argumen1(kondisi), argumen2(ketika benar), arguen3(ketika salah))
 ```{r}
-a <- 0
+a <- 4
 ifelse(a > 0, 1/a, NA)
 ```
 
@@ -69,7 +69,7 @@ ifelse(ini_ventor > 0, 1/ini_ventor, NA)
 Mereka ngecek vektor logika, any bernilai benar ketika 1 nilai saja ada yang BENAR, all bernilai benar ketika semua nilai harus BENAR
 
 ```{r}
-z <- c(TRUE, TRUE, TRUE)
+z <- c(TRUE, FALSE, FALSE)
 any(z) # TRUE
 ```
 
@@ -83,12 +83,13 @@ all(z) #FALSE
 ### 1. Function sederhana tanpa Argumen
 
 ```{r}
-salam <- function() {
-  print("Selamat Sore UPNVJ")
+salam <- function(nama) {
+  paste("Selamat Sore UPNVJ,", nama)
 }
 
-#Memanggil fugsinya
-salam()
+# Memanggil fungsi
+hasil <- salam("De")
+print(hasil)
 ```
 
 ### 2. Function dengan Argumen

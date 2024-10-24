@@ -115,9 +115,9 @@ ini_list <- list(
 # ini_matrix
 # ini_list
 # ini_list$name
-class(ini_vektor)
-class (ini_matrix)
-class(ini_list)
+# class(ini_vektor)
+# class (ini_matrix)
+# class(ini_list)
 
 ```
 
@@ -150,19 +150,20 @@ tail(murders) # Menampilkan 6 data terbawah
 Menggunkana aksesor "\$"
 
 ```{r}
-murders$state
+murders$region
 ```
 
 Names
 
 ```{r}
 names(murders)
+# colnames(murders)
 ```
 
-Length, melihat ukuran sustu ventor dari dataframe
+Length, melihat ukuran suatu vektor dari dataframe
 
 ```{r}
-length((murders$population))
+length((murders$region))
 ```
 
 ## Factor

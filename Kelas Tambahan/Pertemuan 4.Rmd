@@ -53,7 +53,7 @@ Fungsi filter() digunakan untuk menyaring baris data frame berdasarkan kondisi t
 Misalkan di sini kita mau nampilin data yang "tingkat_pembunuhan"-nya bernilai "banyak".
 
 ```{r}
-# filter(murders, tingkat_pembunuhan == "banyak")
+filter(murders, tingkat_pembunuhan == "banyak")
 filter(murders, population > 10^7)
 ```
 
