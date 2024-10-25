@@ -1,0 +1,319 @@
+---
+title: "Kuis Susulan"
+author: "2210512015_Kuis"
+date: "2024-10-25"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Petunjuk
+
+1.  Jawablah dengan mengisi kode chunk di bawah soal.
+2.  Durasi pengerjaan sesuai selama 120 menit (2 jam).
+3.  Tidak ada toleransi pengumpulan telat.
+4.  GABOLEH NYONTEK.
+5.  Misal soal rancu bisa menghubungi asisten terkait
+6.  Kumpulkan dalam bentuk **.pdf**
+7.  Ubah nama author dan nama file menjadi **NIM_Kuis**
+8.  Kalo ada simbol "backslash" pada soal abaikan aja, itu buat ganti baris doang.
+
+# Soal Kuis
+
+0.  Pada soal ini, kita akan menggunakan dataset bernama video_game_sales.\
+    Dataset ini berisi 100 video game dengan penjualan terbaik pada tahun 1984-2015.\
+    Jalankan kode di bawah untuk menggunakan dataset video_game_sales. (2%)
+
+    Sumber dataset: <https://www.kaggle.com/datasets/gregorut/videogamesales>
+
+```{r}
+# Nomor. 0
+video_game_sales = data.frame(
+  name = c(
+    "Wii Sports",
+    "Super Mario Bros.",
+    "Mario Kart Wii",
+    "Wii Sports Resort",
+    "Pokemon Red/Pokemon Blue",
+    "Tetris",
+    "New Super Mario Bros.",
+    "Wii Play",
+    "New Super Mario Bros. Wii",
+    "Duck Hunt",
+    "Nintendogs",
+    "Mario Kart DS",
+    "Pokemon Gold/Pokemon Silver",
+    "Wii Fit",
+    "Wii Fit Plus",
+    "Kinect Adventures!",
+    "Grand Theft Auto V",
+    "Grand Theft Auto: San Andreas",
+    "Super Mario World",
+    "Brain Age: Train Your Brain in Minutes a Day",
+    "Pokemon Diamond/Pokemon Pearl",
+    "Super Mario Land",
+    "Super Mario Bros. 3",
+    "Grand Theft Auto V",
+    "Grand Theft Auto: Vice City",
+    "Pokemon Ruby/Pokemon Sapphire",
+    "Pokemon Black/Pokemon White",
+    "Brain Age 2: More Training in Minutes a Day",
+    "Gran Turismo 3: A-Spec",
+    "Call of Duty: Modern Warfare 3",
+    "Pokémon Yellow: Special Pikachu Edition",
+    "Call of Duty: Black Ops",
+    "Pokemon X/Pokemon Y",
+    "Call of Duty: Black Ops 3",
+    "Call of Duty: Black Ops II",
+    "Call of Duty: Black Ops II",
+    "Call of Duty: Modern Warfare 2",
+    "Call of Duty: Modern Warfare 3",
+    "Grand Theft Auto III",
+    "Super Smash Bros. Brawl",
+    "Call of Duty: Black Ops",
+    "Animal Crossing: Wild World",
+    "Mario Kart 7",
+    "Halo 3",
+    "Grand Theft Auto V",
+    "Pokemon HeartGold/Pokemon SoulSilver",
+    "Super Mario 64",
+    "Gran Turismo 4",
+    "Super Mario Galaxy",
+    "Pokemon Omega Ruby/Pokemon Alpha Sapphire",
+    "Super Mario Land 2: 6 Golden Coins",
+    "Grand Theft Auto IV",
+    "Gran Turismo",
+    "Super Mario 3D Land",
+    "Gran Turismo 5",
+    "Call of Duty: Modern Warfare 2",
+    "Grand Theft Auto IV",
+    "Super Mario All-Stars",
+    "Pokemon FireRed/Pokemon LeafGreen",
+    "Super Mario 64",
+    "Just Dance 3",
+    "Call of Duty: Ghosts",
+    "Halo: Reach",
+    "Mario Kart 64",
+    "New Super Mario Bros. 2",
+    "Halo 4",
+    "Final Fantasy VII",
+    "Call of Duty: Ghosts",
+    "Just Dance 2",
+    "Gran Turismo 2",
+    "Call of Duty 4: Modern Warfare",
+    "Donkey Kong Country",
+    "Minecraft",
+    "Animal Crossing: New Leaf",
+    "Mario Party DS"
+  ),
+  platform = as.factor(c(    
+    "Wii", "NES", "Wii", "Wii", "GB", "GB",
+    "DS", "Wii", "Wii", "NES", "DS", "DS",
+    "GB", "Wii", "Wii", "X360", "PS3", "PS2",
+    "SNES", "DS", "DS", "GB", "NES", "X360",
+    "PS2", "GBA", "DS", "DS", "PS2", "X360",
+    "GB", "X360", "3DS", "PS4", "PS3", "X360",
+    "X360", "PS3", "PS2", "Wii", "PS3", "DS",
+    "3DS", "X360", "PS4", "DS", "N64", "PS2",
+    "Wii", "3DS", "GB", "X360", "PS", "3DS",
+    "PS3", "PS3", "PS3", "SNES", "GBA", "DS",
+    "Wii", "X360", "X360", "N64", "3DS", "X360",
+    "PS", "PS3", "Wii", "PS", "X360", "SNES",
+    "X360", "3DS", "DS"
+  )),
+  year = c(
+    2006, 1985, 2008, 2009, 1996, 1989, 2006,
+    2006, 2009, 1984, 2005, 2005, 1999, 2007,
+    2009, 2010, 2013, 2004, 1990, 2005, 2006,
+    1989, 1988, 2013, 2002, 2002, 2010, 2005,
+    2001, 2011, 1998, 2010, 2013, 2015, 2012,
+    2012, 2009, 2011, 2001, 2008, 2010, 2005,
+    2011, 2007, 2014, 2009, 1996, 2004, 2007,
+    2014, 1992, 2008, 1997, 2011, 2010, 2009,
+    2008, 1993, 2004, 2004, 2011, 2013, 2010,
+    1996, 2012, 2012, 1997, 2013, 2010, 1999,
+    2007, 1994, 2013, 2012, 2007
+  ),
+  genre = as.factor(c(
+    "Sports", "Platform", "Racing", "Sports", "RPG",
+    "Puzzle", "Platform", "Misc", "Platform", "Shooter",
+    "Simulation", "Racing", "RPG", "Sports", "Sports",
+    "Misc", "Action", "Action", "Platform", "Misc", "RPG",
+    "Platform", "Platform", "Action", "Action", "RPG", "RPG",
+    "Puzzle", "Racing", "Shooter", "RPG", "Shooter",
+    "RPG", "Shooter", "Shooter", "Shooter", "Shooter",
+    "Shooter", "Action", "Fighting", "Shooter", "Simulation",
+    "Racing", "Shooter", "Action", "Action", "Platform",
+    "Racing", "Platform", "RPG", "Adventure", "Action",
+    "Racing", "Platform", "Racing", "Shooter", "Action",
+    "Platform", "RPG", "Platform", "Misc", "Shooter",
+    "Shooter", "Racing", "Platform", "Shooter", "RPG",
+    "Shooter", "Misc", "Racing", "Shooter", "Platform",
+    "Misc", "Simulation", "Misc"
+  )),
+  us_sales = c(
+    41.49, 29.08, 15.85, 15.75, 11.27, 23.2,
+    11.38, 14.03, 14.59, 26.93, 9.07, 9.81, 9,
+    8.94, 9.09, 14.97, 7.01, 9.43, 12.78, 4.75, 
+    6.42, 10.83, 9.54, 9.63, 8.41, 6.06, 5.57,
+    3.44, 6.85, 9.03, 5.89, 9.67, 5.17, 5.77,
+    4.99, 8.25, 8.52, 5.54, 6.99, 6.75, 5.98,
+    2.55, 4.74, 7.97, 3.8, 4.4, 6.91, 3.01,
+    6.16, 4.23, 6.16, 6.76, 4.02, 4.89, 2.96,
+    4.99, 4.76, 5.99, 4.34, 5.08, 6.05, 6.72,
+    7.03, 5.55, 3.66, 6.63, 3.01, 4.09, 5.84,
+    3.88, 5.91, 4.36, 5.58, 2.01, 4.46
+  ),
+  global_sales = c(
+    82.74, 40.24, 35.82, 33, 31.37, 30.26, 30.01,
+    29.02, 28.62, 28.31, 24.76, 23.42, 23.1, 22.72,
+    22, 21.82, 21.4, 20.81, 20.61, 20.22, 18.36,
+    18.14, 17.28, 16.38, 16.15, 15.85, 15.32, 15.3,
+    14.98, 14.76, 14.64, 14.64, 14.35, 14.24, 14.03,
+    13.73, 13.51, 13.46, 13.1, 13.04, 12.73, 12.27,
+    12.21, 12.14, 11.98, 11.9, 11.89, 11.66, 11.52,
+    11.33, 11.18, 11.02, 10.95, 10.79, 10.77, 10.69,
+    10.57, 10.55, 10.49, 10.42, 10.26, 10.21, 9.88,
+    9.87, 9.82, 9.76, 9.72, 9.59, 9.52, 9.49, 9.32,
+    9.3, 9.2, 9.09, 9.02
+  )
+)
+
+View(video_game_sales)
+```
+
+1.  Load library dplyr! (3%)
+
+```{r}
+# Jawaban no. 1
+library(dplyr)
+```
+
+2.  Tampilkan 10 game dengan penjualan terbanyak di US untuk game yang rilis pada tahun 2000 s/d 2012.\
+    Tampilkan hanya kolom nama dan total penjualan di US. (10%)
+
+```{r}
+# Jawaban no. 2
+video_game_sales %>% 
+  filter(year >= 2000 & year <= 2012) %>%
+  select(name, us_sales)
+```
+
+3.  Tampilkan semua nama kolom pada dataframe tersebut! (5%)
+
+```{r}
+# Jawaban no. 3
+colnames(video_game_sales)
+```
+
+4.  Tampilkan tipe data yang dimiliki oleh kolom "platform".\
+    Pada bagian bawah kode, jelaskan mengapa kolom "platform" memakai tipe data tersebut. (10%)
+
+```{r}
+# Jawaban no. 4
+class(video_game_sales$platform)
+# str(video_game_sales$platform)
+```
+
+Penjelasan no. 4: Karena data kategorikal, dengan 13 kombinasi
+
+5.  Tampilkan 5 data teratas untuk game pada platform "Wii" diurutkan berdasarkan tahun rilis terbaru.\
+    Tampilkan semua kolom kecuali kolom "us_sales" (11%)
+
+```{r}
+# Jawaban no. 5
+video_game_sales %>%
+  filter( platform == "Wii") %>%
+  arrange(desc(year)) %>%
+  head(5) %>%
+  select(-us_sales)
+```
+
+6.  Buatlah sebuah klasifikasi pada dataframe tersebut berdasarkan penjualan "global_sales" dengan kondisi:
+
+    -   Penjualan \>= 20 dikategorikan sebagai "Untung"
+    -   Penjualan di antara 10-20 dikategorikan sebagai "Biasa aja"
+    -   Penjualan \<= 10 dikategorikan sebagai "Rugi"
+
+    Masukkan ke suatu variabel baru bernama 'tingkat_penjualan'. (12%)
+
+```{r}
+# Jawaban no. 6
+tingkat_penjualan <- 
+  video_game_sales %>%
+  mutate(klasifikasi_penjualan = ifelse(video_game_sales$global_sales >= 20, "Untung",
+                ifelse(video_game_sales$global_sales <= 10, "Rugi", "Biasa aja")))
+tingkat_penjualan
+```
+
+7.  Tambahkan kolom "tingkat_penjualan" tadi sebagai kolom baru pada dataframe.\
+    Tampilkan 8 data teratas berdasarkan global_sales. (12%)
+
+```{r}
+# Jawaban no. 7
+video_game_sales = mutate(video_game_sales, tingkat_penjualan)
+
+video_game_sales  %>%
+  arrange(desc(global_sales)) %>%
+  head(8)
+```
+
+8.  Ambil masing-masing 5 data pada tiap kategori pada tingkat_penjualan.\
+    Gabungkan data-data tersebut ke dalam suatu dataframe baru bernama "new_video_game_sales".\
+    Setelah itu, Tampilkan isinya! (15%)
+
+    (Jadi nanti dataframe new_video_game_sales isinya ada 15 baris).
+
+```{r}
+# Jawaban no. 8
+new_video_game_sales = video_game_sales %>%
+  group_by(klasifikasi_penjualan) %>%
+  sample_n(5)
+new_video_game_sales
+```
+
+9.  Tampilkan rata-rata dan jumlah dari global_sales dikelompokkan berdasarkan platform! (12%)
+
+```{r}
+# Jawaban no. 9
+RataanTotal_by_platform <- video_game_sales %>%
+  group_by(platform) %>%
+  summarise(
+    rata.rata = mean(global_sales),
+    jumlah = sum(global_sales)
+  )
+ 
+RataanTotal_by_platform
+```
+
+10. Lakukan visualisasi dengan barplot dengan sumbu x yaitu nama platformnya dan\
+    sumbu y yaitu rata-rata penjualan dari hasil nomor 9! (10%)
+
+```{r}
+# Jawaban no. 10
+barplot( RataanTotal_by_platform$rata.rata ~ RataanTotal_by_platform$platform,
+  las = 2,
+  xlab = "Nama Platform",
+  ylab = "Rata-Rata Penjualan",
+  main = "Rata-Rata Penjulan tiap Platform"
+)
+```
+
+11. Buatlah histogram dengan sumbu x yaitu tahun pembuatan game dan\
+    sumbu y banyaknya game di tahun tersebut.\
+    Di bawah chunk tuliskan kesimpulan yang dapat diperoleh dari histogram yang kamu buat! (13%)
+
+```{r}
+# Jawaban no. 11
+hist(video_game_sales$year,
+     xlab = "Tahun Pembuatan Game",
+     ylab = "Banyaknya Game",
+     main = "Banyaknya Pembuatan Game per Tahun"
+)
+```
+
+Kesimpulan: Dapat dilihat pembuatan game paling banyak  yaitu pada tahun 2005 sampai dengan 2015.
+
+SELAMAT MENGERJAKAN
