@@ -198,7 +198,8 @@ library(dplyr)
 # Jawaban no. 2
 video_game_sales %>% 
   filter(year >= 2000 & year <= 2012) %>%
-  select(name, us_sales)
+  select(name, us_sales) %>%
+  head(10)
 ```
 
 3.  Tampilkan semua nama kolom pada dataframe tersebut! (5%)

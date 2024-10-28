@@ -1,0 +1,129 @@
+---
+title: "Pertemuan 7"
+author: "Deni Permana"
+date: "2024-10-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pertemuan 7 - Import Data dan GGPLOT2
+
+## Import Data
+```{r}
+# getwd() # Melihat Direktori
+data_orang = read.csv("DatasetP7/data_orang.csv")
+# View(data_orang)
+```
+
+```{r}
+library(readxl)
+
+data_vg = read_excel("DatasetP7/data_video_game.xlsx")
+
+# Export Data
+write.csv(data_vg, "hasil_export.csv")
+```
+
+## ggplot2
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+data_murders = read.csv("DatasetP7/murders_dataset.csv")
+```
+
+### Scatter Plot
+
+Grafik antara populasi dan total kasus pembunuhan
+
+```{r}
+options(scipen = 999)
+
+ggplot(
+  data = data_murders,
+  aes(
+    x = population,
+    y = total_murders,
+    color = region
+  )
+) + geom_point() + labs(
+  x = "Jumlah Penduduk",
+  y = "Total Kasus Pembunuhan",
+  title = "Scatter Plot antara Populasi dengan Total Kasus"
+)
+```
+
+## Histogram
+
+## Data Preparation 
+```{r}
+data_video_game = read.csv("DatasetP7/vg_dataset.csv")
+
+data_video_game = data_video_game %>%
+  filter( Year >= 2000 & Year != "N/A")
+```
+
+Bikin Histogram
+
+```{r}
+ggplot(
+  data = data_video_game,
+  aes(
+    y = Year
+  )
+) + geom_bar(fill = "pink", color = "black", width =  0.9)
+```
+
+### Line Chart
+
+Menampilkan *Grafik Rata-rata penjualan* _video game_ tiap tahun
+
+```{r}
+hasil_rerata = data_video_game %>%
+  group_by(Year) %>%
+  summarise(rerata = mean(Global_Sales))
+
+ggplot(
+  data = hasil_rerata,
+  aes(
+    x = Year,
+    y = rerata,
+    group = 1,
+    fill = Year
+  )
+) + geom_line()
+```
+
+### Pie Chart
+
+```{r}
+ggplot(
+  data = hasil_rerata,
+  aes(
+    x = rerata,
+    y = "",
+    fill = Year
+  )
+) + geom_col() + coord_polar() + theme_void()
+```
+
+### Facet Wrap
+
+Memisahkan grafik pembunuhan berdasrkan region
+
+```{r}
+ggplot(
+  data = data_murders,
+  aes(
+    x = population,
+    y = total_murders,
+    color = region
+  )
+) + geom_point(size = 2) + facet_wrap(~region)
+```
+
