@@ -1,0 +1,30 @@
+---
+title: "Pertemuan 6"
+author: "Deni Permana"
+date: "2024-10-29"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pertemuan 6 - Tidyverse (Lagi)
+
+## Agenda
+1. Tibble
+2. Import data
+3. Dot Operator
+4. Tidyverse Conditional (case_when dan between)
+
+## Tibble
+Tibble adalah tipe data di R, bisa dibilang versi "better" dari dataframe.
+
+Buat mengubah tipe data dari dataframe ke tibble, bisa menggunakan fungsi as_tibble()
+
+```{r}
+library(dslabs)
+library(tidyverse)
+data(murders)
+```
+
