@@ -92,5 +92,5 @@ bil.matrix[c(1,3,4), ]
 bil.matrix[ , c(3,4,5)]
 ```
 
-
+# Lanjut
 
