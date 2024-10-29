@@ -30,3 +30,128 @@ library(tidyverse)
 data(murders)
 ```
 
+Kita cek tipe data dari murders
+
+```{r}
+class(murders)
+```
+
+```{r}
+murders_tibble = as_tibble(murders)
+class(murders_tibble)
+```
+
+### Apa bedanya tibble dan dataframe?
+
+1. Subsetting
+
+```{r}
+class(murders[, "state"])
+class(murders_tibble[, "state"])
+```
+
+2. Better Error Handling
+
+```{r}
+# Dataframe
+murders$Namakolom
+
+#Tibble
+murders_tibble$Namakolom
+```
+
+3.  Tidak Mengonversi String menjadi Factor
+
+Data Frame: Secara default, ketika kamu membuat data frame, R akan mengonversi string menjadi factor.\
+Tibble: Secara default, tibble tidak mengonversi string menjadi factor, sehingga lebih nyaman digunakan dengan data berbasis teks.
+
+4.  Kecepatan
+
+Tibble: Dibuat untuk bekerja lebih baik dengan data yang lebih besar dan lebih efisien dalam hal kinerja dibandingkan dengan data frame standar.
+
+TL;DR = tibble \>\>\>\>\> dataframe
+
+## Import Data
+
+Daripada kita pake library dslabs mulu buat dataset-nya,\
+sekarang kita bakalan belajar gimana caranya import data dari file.\
+Kita bakal nyoba cara import data dari .csv dan .xlsx.
+
+### Menggunakan read_csv() dari library readr untuk format .csv atau .tsv
+
+```{r}
+# Tidak perlu dijalanin karena library readr udah include di tidyverse
+# library(readr)
+```
+
+```{r}
+# Info Working Directory
+getwd()
+
+# Set Working Directory
+# setwd()
+```
+
+```{r}
+data_orang = read.csv("data_orang.csv")
+```
+
+Bisa ambil data dari internet
+
+```{r}
+data_mobil = read_csv("https://raw.githubusercontent.com/r-lib/vroom/master/inst/extdata/mtcars.csv")
+```
+
+### Menggunakan read_excel dari library readxl untuk format .xlsx / .xls
+
+```{r}
+library(readxl)
+```
+
+```{r}
+data_video_game = read_excel("data_video_game.xlsx")
+```
+
+## Dot Operator
+
+Dot (.) digunakan dalam pipe sebagai placeholder ketika kamu ingin mengacu ke hasil perantara di dalam fungsi yang tidak menerima data langsung di argumen pertama, atau ketika kamu ingin menggunakan hasil tersebut lebih dari sekali.
+
+Misalkan di sini kita mau ngitung rata-rata total pembunuhan pada suatu state yang populasinya hanya lebih dari 10jt
+
+```{r}
+murders %>%
+  filter(population > 10^7) %>%
+  summarise(rerata = mean(.$total))
+```
+
+Alur kode:\
+- Data "murders" di-filter untuk mengambil hanya baris dengan populasi lebih dari 10jt.\
+- Hasil filter diwakili oleh dot (.), yang kita gunakan untuk mengakses kolom "total" dari hasil filter tersebut.\
+- Dot di sini merujuk ke keseluruhan hasil filter dan kita mengambil kolom "total" darinya dengan .\$total.
+
+## Tidyverse Conditional
+
+### Fungsi case_when() (dari package dplyr)
+
+Fungsi case_when() ini mirip kaya switch case.\
+Misal kita mau bikin kondisi kaya gini:\
+- Kalo total pembunuhan \> 250, maka output "banyak"\
+- Kalo total pembunuhan \< 50, maka output "dikit"\
+- Kalo total pembunuhan 50-250, maka output "sedang"
+
+```{r}
+case_when(
+  murders$total > 250 ~ "Banyak",
+  murders$total < 50 ~ "Dikit",
+  TRUE ~ "Sedang"
+)
+```
+
+### Fungsi between() (dari package dplyr)
+
+Fungsi between dipake buat menentukan apakah suatu nilai berada di dalam suatu interval.\
+Misal kita mau ngecek data yang punya total pembunuhan antara 250 s/d 500.
+
+```{r}
+murders$total %>% between(250, 500)
+```
