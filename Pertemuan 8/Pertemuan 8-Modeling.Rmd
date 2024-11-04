@@ -1,0 +1,185 @@
+---
+title: "Pertemuan 8 - Modeling"
+author: "Deni Permana"
+date: "2024-11-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pertemuan 8 - Modelling
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+## Modelling
+
+### Supervised Learning
+
+### Linear Regression (Prediction)
+
+Linear regression digunakan untuk memodelkan hubungan antara variabel dependen (target) yang bersifat kontinu dengan satu atau lebih variabel independen (predictor). \
+Misalkan disini kita mau memprediksi gaji berdasarkan pengalaman kerja.
+
+Langkah-langkah:
+
+1. data Gathering
+
+```{r}
+salary_data = read.csv("salary.csv")
+```
+
+2. Data Pre-processing
+
+```{r}
+# Mengganti nama kolom
+salary_data = salary_data %>% rename(
+  "id" = "X",
+  "years" = "YearsExperience",
+  "salary" = "Salary"
+)
+```
+
+```{r}
+ggplot(
+  salary_data,
+  aes(years, salary)
+) + geom_point()
+```
+
+3. Data Splitting
+
+```{r}
+set.seed(421)
+split = initial_split(salary_data, prop = 0.8, strata = salary)
+salary_train = split %>% training()
+salary_test = split %>% testing()
+```
+
+4. Data Training
+
+```{r}
+model_linear = lm(
+  salary ~ years,
+  data = salary_train
+)
+
+summary(model_linear)
+```
+
+```{r}
+ggplot(
+  salary_train,
+  aes(years, salary)
+) + geom_point() + stat_smooth(
+  method = "lm",
+  formula = y ~ x,
+  geom = "smooth"
+)
+```
+
+5. Data testing
+
+```{r}
+hasil_prediksi = as_tibble(
+  predict(
+    model_linear,
+    salary_test
+  )
+)
+
+# Membandingkan hasil yang asli dengan hasil prediksi
+salary_test %>% mutate(hasil_prediksi)
+```
+
+
+### Logistic Regression (Klasifikasi)
+
+Logistic regression digunkan ketika variabel taget bersifat kategorikal. Model ini memprediksi probabilita kejadian tertentu dan digunakan untuk klasifikasi. \
+Misalkan di sini kita mau memprediksi kelas bunga iris(emot).
+
+Langkah-langkah:
+
+1. Data Gatering
+
+```{r}
+loan_data = read_csv("loan.csv")
+```
+
+2. Data Pre-processing
+
+```{r}
+# Menghilangkan dana N/A
+loan_data = na.omit(loan_data)
+
+# Menghilangkan data kosong
+loan_data = loan_data %>% filter(
+  Gender != "",
+  Married != "",
+  Dependents != "",
+  Self_Employed != "",
+)
+
+# Menghilangkan kolom Loan_ID
+loan_data = loan_data %>% select(-Loan_ID)
+
+# Mengubah kolom loan_status bernilai 1 atau 0
+loan_data = loan_data %>% mutate(Loan_Status = ifelse(Loan_Status == "Y", 1,0))
+```
+
+3. data Splitting
+
+```{r}
+set.seed(127)
+split = initial_split(loan_data, prop = 0.8, strata = Loan_Status)
+loan_train = split %>% training()
+loan_test = split %>% testing()
+```
+
+4. Data Training
+
+```{r}
+# Membuat model regresi logistik
+model_logistic <- glm(
+  Loan_Status ~ .,
+  data = loan_train, family = "binomial"
+)
+
+# Menampilkan ringkasan model
+summary(model_logistic)
+```
+
+5. Data Testing
+
+```{r}
+hasil_klasifikasi = as_tibble(
+  predict(
+    model_logistic,
+    loan_test,
+    type = "response"
+  )
+)
+
+hasil_klasifikasi$value = ifelse(hasil_klasifikasi$value >= 0.5, 1, 0) 
+```
+
+```{r}
+loan_test %>% mutate(hasil_klasifikasi)
+```
+
+6. Matriks Evaluasi
+
+```{r}
+library(caret)
+```
+
+```{r}
+confusionMatrix(
+  as_factor(loan_test$Loan_Status),
+  as_factor(hasil_klasifikasi$value)
+)
+```

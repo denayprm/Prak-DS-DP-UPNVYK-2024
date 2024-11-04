@@ -1,0 +1,64 @@
+---
+title: "Pertemuan 8-Reshape"
+author: "Deni Permana"
+date: "2024-11-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pertemuan 8 - Data Wrangling (Reshape)
+
+```{r}
+library(tidyverse)
+```
+
+## Data Wrangling
+
+### Reshape
+
+```{r}
+pl_dataset = read.csv("pl-tables.csv")
+```
+
+### Pivot Wider
+
+Mengubah data dari format long menjadi wide.\
+Misalkan di sini kita mau memetakan tiap tim dari tahun ke tahun.
+
+```{r}
+#Memilih kolom yang diperlukan saja
+pl_tim_posisi = pl_dataset %>% select(team, season_end_year, position)
+
+pl_dataset_wide = pl_tim_posisi %>%
+  pivot_wider(
+    names_from = "season_end_year",
+    values_from = "position"
+  )
+```
+
+### Pivot Longer
+
+Mengubah data dari format wide menjadi long
+
+```{r}
+pl_dataset_long = pl_dataset_wide %>%
+  pivot_longer(
+    cols = "1993":"2024", names_to = "year", values_to = "position"
+  )
+```
+
+### Tambah Baris
+
+Untuk menambah baris dengan menggabungkan kedua dataset, pastikan kedu dataset tersebut memiliki **KOLOM YANG SAMA**
+
+```{r}
+# Misalkan kita mau menggabunkan tim tahun 2019 dan 2024
+
+pl_2019 = pl_dataset %>% filter(season_end_year == 2019)
+pl_2024 = pl_dataset %>% filter(season_end_year == 2024)
+
+pl_19_24 = rbind(pl_2019, pl_2024)
+```
