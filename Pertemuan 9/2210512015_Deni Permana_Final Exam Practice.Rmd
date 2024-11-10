@@ -1,6 +1,6 @@
 ---
 title: "Latihan Responsi"
-author: "NIM - Nama"
+author: "2210512015 - Deni Permana"
 date: "`r Sys.Date()`"
 output: pdf_document
 ---
@@ -20,7 +20,9 @@ Kerjakan soal-soal berikut dengan teliti!
 *Library* yang dibutuhkan adalah `tidyverse`, `tidymodels`, dan`here`.
 
 ```{r}
-
+library(tidyverse)
+library(tidymodels)
+library(here)
 ```
 
 ### 2. *Import Dataset* (5 poin)
@@ -29,12 +31,14 @@ Import *dataset* **airquality1.csv** dan **airquality2.csv** dengan menggunakan 
 
 ```{r}
 # airquality1.csv
-
+airquality1 <- read_csv(here("Pertemuan 9/datasetP9/airquality1.csv"))
+head(datset_airquality1, 10)
 ```
 
 ```{r}
 # airquality2.csv
-
+airquality2 <- read_csv(here("Pertemuan 9/datasetP9/airquality2.csv"))
+head(datset_airquality2, 10)
 ```
 
 ## *Data Preprocessing*
@@ -44,7 +48,18 @@ Import *dataset* **airquality1.csv** dan **airquality2.csv** dengan menggunakan 
 Dari soal sebelumnya, dapat dilihat bahwa *dataset* **airquality1** memiliki nilai N/A pada beberapa kolom. Hapus nilai N/A atau lakukan imputasi data sederhana untuk mengisi nilai N/A, lalu tampilkan 10 data pertama.
 
 ```{r}
+# Hapus N/A
+airquality1_clean <- na.omit(airquality1)
 
+# Imputasi nilai N/A ndengan rata-rata kolom
+# airquality1_imputed <- datset_airquality1 %>%
+#   mutate(across(everything(), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)))
+
+airquality1_imputed <- airquality1 %>% 
+  mutate(across(everything(), ~ ifelse(is.na(.), round(mean(., na.rm = TRUE)), .)))
+
+head(airquality1_clean, 10)
+head(airquality1_imputed, 10)
 ```
 
 ### 4. *Joining Table* (10 poin)
