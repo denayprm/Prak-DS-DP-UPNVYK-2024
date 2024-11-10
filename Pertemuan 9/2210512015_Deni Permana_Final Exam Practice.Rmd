@@ -115,9 +115,31 @@ airquality3 <- airquality3 %>%
 Gambarkan perubahan kualitas udara (Ozone) setiap harinya dengan menggunakan ggplot2. Kombinasikan 2 jenis geom yang sesuai dengan data yang ada.
 
 ```{r}
+library(ggplot2)
+
 # Menggunakan data set yang masih ada "N/A"
+ggplot(
+  data = airquality,
+  aes(
+    x = Date,
+    y = Ozone)
+  ) + geom_line(color = "blue",size = 1) + 
+  geom_point(color = "red", size = 2) +
+  labs(title = "Perubahan Kualitas Udara (Ozone)",
+       x = "Waktu", 
+       y = "Ozone")
 
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
+ggplot(
+  data = airquality3,
+  aes(
+    x = Date,
+    y = Ozone)
+  ) + geom_line(color = "blue",size = 1) + 
+  geom_point(color = "red", size = 2) +
+  labs(title = "Perubahan Kualitas Udara (Ozone)",
+       x = "Waktu", 
+       y = "Ozone")
 ```
 
 ## Data Modelling
