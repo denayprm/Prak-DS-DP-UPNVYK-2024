@@ -93,7 +93,7 @@ hasil_prediksi = as_tibble(
 )
 
 # Membandingkan hasil yang asli dengan hasil prediksi
-salary_test %>% mutate(hasil_prediksi)
+salary_test = salary_test %>% mutate(hasil_prediksi)
 ```
 
 
