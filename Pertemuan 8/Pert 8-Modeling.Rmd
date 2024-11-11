@@ -1,0 +1,164 @@
+---
+title: "8_Modelling"
+author: "Deni Permana"
+date: "2024-11-11"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pertemuan 8 - Modelling
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+## Regression
+
+1. Data Gathering
+
+```{r}
+salary_dataset = read.csv("salary.csv")
+```
+
+2. Data Preprocesing
+
+```{r}
+salary_dataset =  salary_dataset %>% select(-X)
+```
+
+3. Data Splitting
+
+```{r}
+set.seed(24)
+split = initial_split(salary_dataset, prop = 0.8, strata = Salary)
+salary_train = split %>% training()
+salary_test = split %>% testing()
+```
+
+4. Training Model
+
+```{r}
+hasil_model = lm (
+  Salary ~ YearsExperience,
+  data = salary_train
+)
+summary(hasil_model)
+```
+
+5. Prediksi Model
+
+```{r}
+hasil_prediksi = predict(hasil_model,salary_test)
+
+salary_test %>% mutate(hasil = hasil_prediksi)
+```
+
+## Clustering
+
+1. Import Library
+
+```{r}
+library(dslabs)
+```
+
+2. Import Dataset
+
+```{r}
+data(gapminder)
+head(gapminder)
+```
+
+3. Pre-Processing
+
+```{r}
+gapminder$infant_mortality[is.na(gapminder$infant_mortality)] = mean (
+  gapminder$infant_mortality, na.rm = TRUE)
+
+gapminder$fertility[is.na(gapminder$fertility)] = mean (
+  gapminder$fertility, na.rm = TRUE)
+
+gapminder$gdp[is.na(gapminder$gdp)] = mean (
+  gapminder$gdp, na.rm = TRUE)
+```
+
+4. Filter Data dan Kolom
+
+```{r}
+gapminder_2004 = gapminder %>% 
+  filter(year == 2004) %>%
+  select(-year, -continent, -region)
+
+head(gapminder_2004)
+```
+
+5. Scaling Data
+
+```{r}
+gapminder_2004_scaled = gapminder_2004 %>%
+  select(-country) %>%
+  scale()
+
+head(gapminder_2004_scaled)
+```
+
+6. Training Data
+
+```{r}
+set.seed(123)
+kmeans_result = kmeans(
+  gapminder_2004_scaled,
+  center = 4,
+  nstart = 25
+)
+
+gapminder_2004$cluster = as.factor(kmeans_result$cluster)
+
+head(gapminder_2004)
+```
+7. Elbow Method # titik elbow adalah titik tengah sebelum titik itu turunnya drastis, setelah itu turun nya biasa aja
+
+```{r}
+wss = sapply(1:10, function(k){
+  set.seed(123)
+  kmeans(
+    gapminder_2004_scaled,
+    center = k,
+    nstart = 25
+  )$tot.withinss
+})
+
+elbow_data = data.frame(
+  k = 1:10,
+  wss = wss
+)
+
+ggplot(
+  data = elbow_data,
+  aes(
+    x = k,
+    y = wss
+  )
+) + geom_line(
+  color = "blue"
+) + geom_point(
+  color = "red"
+)
+```
+
+8. Visualisasi Data
+
+```{r}
+ggplot(
+  gapminder_2004,
+  aes(
+    x = gdp,
+    y = life_expectancy,
+    color = cluster
+  )
+) +geom_point() + scale_x_log10()
+```
+

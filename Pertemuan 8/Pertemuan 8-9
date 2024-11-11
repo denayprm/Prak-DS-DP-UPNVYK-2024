@@ -1,0 +1,29 @@
+Pertemuan 8-9
+Senin, 11/11/24
+
+# Langkah2 Modeling
+1. Business Understanding 
+2. Data Understadning dan Data Gathering
+3. Data Cleaning/Preprocessing
+4. Menentukan Jenis Model
+5. Data Training
+6. Evaluation
+7. Fine Tuning
+8. Deployment
+
+# Jenis Modeling
+a. Supervised Learning 
+  - Dataset sudah ada label
+  - Contoh
+    - Classification (Kategorikal, Kelas nya sudah diketahui apa aja
+    - Regression (Nilai Kontinu/Numerik), Kelasnya belum diketahui apa aja
+  - 
+b. Unsupervised Label
+  - Dataset tidak ada label
+  - Contoh
+    - Clustering
+    - Association 
+    - Dimentional 
+    
+# Clasisfikasi (Akurasi)
+  - Rumus: Prediksi Benar dibagi Total Prediksi
