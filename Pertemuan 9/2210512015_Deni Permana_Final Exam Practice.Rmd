@@ -70,12 +70,16 @@ Perhatikan *dataset* **airquality1** dan **airquality2**, ada satu kolom yang sa
 library(dplyr)
 
 # Menggunakan data set yang masih ada "N/A"
-airquality <- inner_join(airquality1, airquality2, by = "X")
-tail(airquality)
+airquality3 <- inner_join(airquality1, airquality2, by = "X")
+tail(airquality3)
+
+# Menggunakan data set yang sudah dihapus N/A
+airquality0 <- inner_join(airquality1_clean, airquality2, by = "X")
+tail(airquality0)
 
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
-airquality3 <- inner_join(airquality1_imputed, airquality2, by = "X")
-tail(airquality3)
+airquality <- inner_join(airquality1_imputed, airquality2, by = "X")
+tail(airquality)
 
 ```
 
@@ -85,12 +89,16 @@ Buat kolom baru bernama Date yang menyimpan kombinasi tanggal dari kolom Month d
 
 ```{r}
 # Menggunakan data set yang masih ada "N/A"
-airquality$Date <- as.POSIXct(paste(1973, airquality$Month, airquality$Day, sep = "-"), format = "%Y-%m-%d")
-head(airquality)
-
-# Menggunakan data set yang sudah di isi nilai N/A dengan mean
 airquality3$Date <- as.POSIXct(paste(1973, airquality3$Month, airquality3$Day, sep = "-"), format = "%Y-%m-%d")
 head(airquality3)
+
+# Menggunakan data set yang sudah dihapus N/A
+airquality0$Date <- as.POSIXct(paste(1973, airquality0$Month, airquality0$Day, sep = "-"), format = "%Y-%m-%d")
+head(airquality0)
+
+# Menggunakan data set yang sudah di isi nilai N/A dengan mean
+airquality$Date <- as.POSIXct(paste(1973, airquality$Month, airquality$Day, sep = "-"), format = "%Y-%m-%d")
+head(airquality)
 
 ```
 
@@ -98,12 +106,17 @@ Setelah itu, buang kolom X, Day, dan Month yang tidak akan digunakan untuk membu
 
 ```{r}
 # Menggunakan data set yang masih ada "N/A"
-airquality <- airquality %>%
+airquality3 <- airquality3 %>%
   select(-X,-Day, -Month) %>%
   rename(Solar_Radiation = Solar.R)
 
+# Menggunakan data set yang sudah dihapus N/A
+airquality0 <- airquality0 %>%
+  select(-X, -Day, -Month) %>%
+  rename(Solar_Radiation = Solar.R)
+
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
-airquality3 <- airquality3 %>%
+airquality <- airquality %>%
   select(-X,-Day, -Month) %>%
   rename(Solar_Radiation = Solar.R)
 ```
@@ -119,12 +132,26 @@ library(ggplot2)
 
 # Menggunakan data set yang masih ada "N/A"
 ggplot(
-  data = airquality,
+  data = airquality3,
   aes(
     x = Date,
     y = Ozone)
-  ) + geom_line(color = "blue",size = 1) + 
-  geom_point(color = "red", size = 2) +
+  ) + geom_line(color = "blue") + 
+  geom_point(color = "red", size = 1) +
+  labs(title = "Perubahan Kualitas Udara (Ozone)",
+       x = "Waktu", 
+       y = "Ozone") +
+  theme_minimal()
+
+# Menggunakan data set yang sudah dihapus N/A
+# Menggunakan data set yang masih ada "N/A"
+ggplot(
+  data = airquality0,
+  aes(
+    x = Date,
+    y = Ozone)
+  ) + geom_line(color = "blue") + 
+  geom_point(color = "red", size = 1) +
   labs(title = "Perubahan Kualitas Udara (Ozone)",
        x = "Waktu", 
        y = "Ozone") +
@@ -132,12 +159,12 @@ ggplot(
 
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
 ggplot(
-  data = airquality3,
+  data = airquality,
   aes(
     x = Date,
     y = Ozone)
-  ) + geom_line(color = "blue",size = 1) + 
-  geom_point(color = "red", size = 2) +
+  ) + geom_line(color = "blue") + 
+  geom_point(color = "red", size = 1) +
   labs(title = "Perubahan Kualitas Udara (Ozone)",
        x = "Waktu", 
        y = "Ozone") + 
@@ -152,8 +179,24 @@ Variabel pada dataset ini memiliki range yang berbeda-beda. Lakukan scaling agar
 
 ```{r}
 # Menggunakan data set yang masih ada "N/A"
+airquality3_scaled <- airquality3 %>%
+  select(-Date) %>%
+  scale()
+head(airquality3_scaled)
+cat("\n")
+
+# Menggunakan data set yang sudah dihapus N/A
+airquality0_scaled <- airquality0 %>%
+  select(-Date) %>%
+  scale()
+head(airquality0_scaled)
+cat("\n")
 
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
+airquality_scaled <- airquality %>%
+  select(-Date) %>%
+  scale()
+head(airquality_scaled)
 ```
 
 ### 8. Data Splitting (5 poin)
@@ -162,16 +205,22 @@ Bagi dataset untuk *training* dan *testing* dengan proporsi *training* 80%. Past
 
 ```{r}
 # Menggunakan data set yang masih ada "N/A"
-set.seed(124)
+set.seed(125)
+split2 <- initial_split(airquality3, prop = 0.8, strata = Temp)
+airquality3_train <- split2 %>% training()
+airquality3_test <- split2 %>% testing()
+
+# Menggunakan data set yang sudah dihapus N/A
+set.seed(125)
+split3 <- initial_split(airquality0, prop = 0.8, strata = Temp)
+airquality0_test <- split3 %>% training()
+airquality0_train <- split3 %>% testing()
+
+# Menggunakan data set yang sudah di isi nilai N/A dengan mean
+set.seed(125)
 split = initial_split(airquality, prop = 0.8, strata = Temp)
 airquality_train = split %>% training()
 airquality_test = split %>% testing()
-
-# Menggunakan data set yang sudah di isi nilai N/A dengan mean
-set.seed(124)
-split2 = initial_split(airquality3, prop = 0.8, strata = Temp)
-airquality3_train = split2 %>% training()
-airquality3_test = split2 %>% testing()
 ```
 
 ### 9. Buat Resep (15 poin)
@@ -180,6 +229,8 @@ Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan
 
 ```{r}
 # Menggunakan data set yang masih ada "N/A"
+
+# Menggunakan data set yang sudah dihapus N/A
 
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
 ```
@@ -192,6 +243,8 @@ Terapkan resep yang sudah dibuat ke data *training* dan *testing*.
 # airquality_training
 # Menggunakan data set yang masih ada "N/A"
 
+# Menggunakan data set yang sudah dihapus N/A
+
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
 
 ```
@@ -199,6 +252,8 @@ Terapkan resep yang sudah dibuat ke data *training* dan *testing*.
 ```{r}
 # airquality_testing
 # Menggunakan data set yang masih ada "N/A"
+
+# Menggunakan data set yang sudah dihapus N/A
 
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
 ```
@@ -210,6 +265,8 @@ Terapkan resep yang sudah dibuat ke data *training* dan *testing*.
 ```{r}
 # Menggunakan data set yang masih ada "N/A"
 
+# Menggunakan data set yang sudah dihapus N/A
+
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
 ```
 
@@ -219,6 +276,8 @@ Evaluasi performa model menggunakan data *testing* (performanya jelek juga gapap
 
 ```{r}
 # Menggunakan data set yang masih ada "N/A"
+
+# Menggunakan data set yang sudah dihapus N/A
 
 # Menggunakan data set yang sudah di isi nilai N/A dengan mean
 ```
