@@ -223,53 +223,6 @@ airquality_train = split %>% training()
 airquality_test = split %>% testing()
 ```
 
-### Hanya Percobaan
-
-```{r}
-# Memuat paket-paket yang diperlukan  
-# library(ggplot2)  
-# library(dplyr)  
-
-# Memuat data (ganti 'file_path.csv' dengan jalur file Anda)  
-# airquality <- read.csv('file_path.csv')  
-
-# Melihat struktur data  
-str(airquality)  
-
-# Melihat ringkasan data  
-summary(airquality)  
-
-# Menghapus baris dengan nilai NA (jika ada)  
-# airquality <- na.omit(airquality)  
-
-# Membangun model regresi linier untuk memprediksi Ozone  
-model <- lm(Ozone ~ Solar_Radiation + Wind + Temp, data = airquality)  
-
-# Melihat ringkasan model  
-summary(model)  
-
-# Memprediksi nilai Ozone dengan data yang ada  
-airquality$predicted_ozone <- predict(model, newdata = airquality)  
-
-# Menggambarkan hasil  
-ggplot(airquality, aes(x = predicted_ozone, y = Ozone)) +  
-  geom_point(color = 'blue') +  
-  geom_abline(slope = 1, intercept = 0, color = 'red') +  
-  labs(title = "Perbandingan Ozone yang Diprediksi dan Ozone Aktual",  
-       x = "Ozone Diprediksi",  
-       y = "Ozone Aktual") +  
-  theme_minimal()  
-
-head(airquality,10)
-
-# Menghitung MSE (Mean Squared Error) untuk evaluasi model  
-mse <- mean((airquality$predicted_ozone - airquality$Ozone) ^ 2)  
-print(paste("Mean Squared Error:", mse))  
-
-# Jika Anda ingin menyimpan model  
-# saveRDS(model, file = "ozone_model.rds")
-```
-
 ### 9. Buat Resep (15 poin)
 
 Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan 1 variabel yang menjadi *outcome*. Biarkan variabel Date sebagai ID.
