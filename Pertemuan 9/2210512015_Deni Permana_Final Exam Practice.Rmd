@@ -228,6 +228,49 @@ airquality_test = split %>% testing()
 Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan 1 variabel yang menjadi *outcome*. Biarkan variabel Date sebagai ID.
 
 ```{r}
+# # Membuat model regresi linear
+# lm_model <- linear_reg() %>%
+#   set_engine("lm") %>%
+#   fit(Ozone ~ Solar_Radiation, data = airquality_train)
+# 
+# # Ringkasan hasil model
+# summary(lm_model$fit)
+# 
+# # Prediksi dengan testing data
+# predictions <- predict(lm_model, new_data = airquality_test) %>%
+#   bind_cols(airquality_test)
+# 
+# # Menghitung MSE
+# mse <- mean((predictions$.pred - predictions$Ozone)^2)
+# mse
+# 
+# # Menghitung R-squared
+# r_squared <- cor(predictions$.pred, predictions$Ozone)^2
+# r_squared
+
+
+# library(parsnip)
+# 
+# # Definisikan model random forest
+# rf_model <- rand_forest(mtry = 3, trees = 100) %>%
+#   set_engine("ranger") %>%
+#   set_mode("regression")
+# 
+# # Fit model dengan data train
+# rf_fit <- rf_model %>%
+#   fit(Ozone ~ ., data = airquality_train)
+# 
+# rf_fit
+# 
+# # Prediksi dengan data test
+# predictions <- predict(rf_fit, new_data = airquality_test)
+# 
+# # Gabungkan prediksi dengan nilai sebenarnya
+# results <- airquality_test %>%
+#   select(Ozone) %>%
+#   mutate(Predicted_Ozone = predictions$.pred)
+
+
 # Menggunakan data set yang masih ada "N/A"
 
 # Menggunakan data set yang sudah dihapus N/A
