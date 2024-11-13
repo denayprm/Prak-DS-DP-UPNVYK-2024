@@ -223,9 +223,7 @@ airquality_train = split %>% training()
 airquality_test = split %>% testing()
 ```
 
-### 9. Buat Resep (15 poin)
-
-Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan 1 variabel yang menjadi *outcome*. Biarkan variabel Date sebagai ID.
+### Percobaan
 
 ```{r}
 # # Membuat model regresi linear
@@ -269,8 +267,13 @@ Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan
 # results <- airquality_test %>%
 #   select(Ozone) %>%
 #   mutate(Predicted_Ozone = predictions$.pred)
+```
 
+### 9. Buat Resep (15 poin)
 
+Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan 1 variabel yang menjadi *outcome*. Biarkan variabel Date sebagai ID.
+
+```{r}
 # Menggunakan data set yang masih ada "N/A"
 
 # Menggunakan data set yang sudah dihapus N/A
