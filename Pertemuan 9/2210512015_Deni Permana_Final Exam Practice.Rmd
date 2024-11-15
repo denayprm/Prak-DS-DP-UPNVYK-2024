@@ -79,6 +79,8 @@ Setelah itu, buang kolom X, Day, dan Month yang tidak akan digunakan untuk membu
 airquality <- airquality %>%
   select(-X, -Day, -Month) %>%
   rename(Solar_Radiation = Solar.R)
+
+head(airquality)
 ```
 
 ## Data Visualization
@@ -140,7 +142,7 @@ Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan
 ```{r}
 airquality_resep <- recipe(Ozone ~ Solar_Radiation + Wind + Temp, data = airquality_train) %>%
   step_normalize(all_predictors())
-airquality_train_prepped <- prep(rec, training = airquality_train)
+airquality_train_prepped <- prep(airquality_resep, training = airquality_train)
 
 summary(airquality_resep)
 summary(airquality_train_prepped)
@@ -176,7 +178,7 @@ airquality_trained_model <- hasil_model %>%
   fit(Ozone ~ Solar_Radiation + Wind + Temp, data = airquality_train_processed)
 
 summary(hasil_model)
-cat("\n\n")
+cat("\n")
 summary(airquality_trained_model)
 ```
 
@@ -195,11 +197,6 @@ airquality_results <- airquality_test_processed %>%
   bind_cols(airquality_predictions) %>%
   metrics(truth = Ozone, estimate = .pred)
 
-results <- test_processed %>%
-  bind_cols(predictions) %>%
-  metrics(truth = Ozone, estimate = .pred)
-
-print(results)
 
 print(airquality_results)
 ```
