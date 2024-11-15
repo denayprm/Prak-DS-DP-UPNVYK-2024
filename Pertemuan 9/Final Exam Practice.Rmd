@@ -124,7 +124,7 @@ Bagi dataset untuk *training* dan *testing* dengan proporsi *training* 80%. Past
 
 ```
 
-#### Percobaan
+#### Percobaan lain
 
 ```{r}
 
