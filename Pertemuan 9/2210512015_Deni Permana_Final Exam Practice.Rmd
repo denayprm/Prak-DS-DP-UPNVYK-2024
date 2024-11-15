@@ -69,7 +69,8 @@ tail(airquality)
 Buat kolom baru bernama Date yang menyimpan kombinasi tanggal dari kolom Month dan Day dengan format yyyy-MM-dd (tahun = 1973). Gunakan fungsi `paste` untuk menggabungkan string dan fungsi `as.POSIXct` untuk mengubah string menjadi tanggal. Manfaatkan fungsi *help* sebaik-baiknya.
 
 ```{r}
-airquality$Date <- as.POSIXct(paste(1973, airquality$Month, airquality$Day, sep = "-"), format = "%Y-%m-%d")
+airquality$Date <- as.POSIXct(paste(1973, airquality$Month, airquality$Day, sep = "-"),
+                              format = "%Y-%m-%d")
 head(airquality)
 ```
 
@@ -178,7 +179,6 @@ airquality_trained_model <- hasil_model %>%
   fit(Ozone ~ Solar_Radiation + Wind + Temp, data = airquality_train_processed)
 
 summary(hasil_model)
-cat("\n")
 summary(airquality_trained_model)
 ```
 
