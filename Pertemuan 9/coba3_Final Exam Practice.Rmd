@@ -99,7 +99,7 @@ ggplot(
   geom_point(color = "red", size = 1) +
   labs(title = "Perubahan Kualitas Udara (Ozone)",
        x = "Waktu", 
-       y = "Ozone") +
+       y = "Kualitas Ozone") +
   theme_minimal()
 ```
 
@@ -110,7 +110,12 @@ ggplot(
 Variabel pada dataset ini memiliki range yang berbeda-beda. Lakukan scaling agar berada di range yang sama.
 
 ```{r}
+# Melakukan scaling pada variabel
+library(scales)
 
+# Menggunakan scale() untuk menormalkan data
+airquality_scaled <- airquality %>%
+  mutate(across(c(Ozone, Solar_Radiation, Wind), ~ rescale(.)))
 ```
 
 ### 8. Data Splitting (5 poin)
@@ -118,7 +123,13 @@ Variabel pada dataset ini memiliki range yang berbeda-beda. Lakukan scaling agar
 Bagi dataset untuk *training* dan *testing* dengan proporsi *training* 80%. Pastikan dataset diacak sebelum dibagi, dan pastikan hasil acak akan tetap konsisten walaupun dijalankan berkali-kali dari perangkat berbeda sekalipun.
 
 ```{r}
+# Menggunakan set.seed untuk memastikan hasil acak konsisten
+set.seed(123)
 
+# Membagi data menjadi training dan testing
+data_split <- initial_split(airquality_scaled, prop = 0.8)
+train_data <- training(data_split)
+test_data <- testing(data_split)
 ```
 
 ### 9. Buat Resep (15 poin)
@@ -126,7 +137,9 @@ Bagi dataset untuk *training* dan *testing* dengan proporsi *training* 80%. Past
 Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan 1 variabel yang menjadi *outcome*. Biarkan variabel Date sebagai ID.
 
 ```{r}
-
+# Membuat resep untuk training data
+rec <- recipe(Ozone ~ Solar_Radiation + Wind + Temp, data = train_data) %>%
+  step_normalize(all_predictors())  # Normalisasi semua prediktor
 ```
 
 ### 10. Terapkan Resep (5 poin)
@@ -134,13 +147,18 @@ Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan
 Terapkan resep yang sudah dibuat ke data *training* dan *testing*.
 
 ```{r}
-# airquality_training
+# Menerapkan resep ke data training dan testing
+train_prepped <- prep(rec, training = train_data)
+```
 
+```{r}
+# airquality_training
+train_processed <- bake(train_prepped, new_data = train_data)
 ```
 
 ```{r}
 # airquality_testing
-
+test_processed <- bake(train_prepped, new_data = test_data)
 ```
 
 ### 10. *Training* Model (10 poin)
@@ -148,7 +166,13 @@ Terapkan resep yang sudah dibuat ke data *training* dan *testing*.
 *Training* model berdasarkan data yang sudah diolah.
 
 ```{r}
+# Melatih model menggunakan data yang telah diproses
+model <- linear_reg() %>%
+  set_engine("lm")
 
+# Fit model ke data training
+trained_model <- model %>%
+  fit(Ozone ~ Solar_Radiation + Wind + Temp, data = train_processed)
 ```
 
 ### 11. Evaluasi Model (5 poin)
@@ -156,5 +180,15 @@ Terapkan resep yang sudah dibuat ke data *training* dan *testing*.
 Evaluasi performa model menggunakan data *testing* (performanya jelek juga gapapa)
 
 ```{r}
+# Evaluasi performa model menggunakan data testing
+predictions <- predict(trained_model, new_data = test_processed)
 
+# Menghitung evaluasi metrik (misalnya RMSE)
+library(yardstick)
+
+results <- test_processed %>%
+  bind_cols(predictions) %>%
+  metrics(truth = Ozone, estimate = .pred)
+
+print(results)
 ```
