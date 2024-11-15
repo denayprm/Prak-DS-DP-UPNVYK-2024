@@ -20,7 +20,9 @@ Kerjakan soal-soal berikut dengan teliti!
 *Library* yang dibutuhkan adalah `tidyverse`, `tidymodels`, dan`here`.
 
 ```{r}
-
+library(tidyverse)
+library(tidymodels)
+library(here)
 ```
 
 ### 2. *Import Dataset* (5 poin)
@@ -28,11 +30,15 @@ Kerjakan soal-soal berikut dengan teliti!
 Import *dataset* **airquality1.csv** dan **airquality2.csv** dengan menggunakan *library* `here`, lalu tampilkan 10 data pertama.
 
 ```{r}
-
+# airquality1.csv
+airquality1 <- read_csv(here("Pertemuan 9/datasetP9/airquality1.csv"))
+head(airquality1, 10)
 ```
 
 ```{r}
-
+# airquality2.csv
+airquality2 <- read_csv(here("Pertemuan 9/datasetP9/airquality2.csv"))
+head(airquality2, 10)
 ```
 
 ## *Data Preprocessing*
@@ -42,7 +48,9 @@ Import *dataset* **airquality1.csv** dan **airquality2.csv** dengan menggunakan 
 Dari soal sebelumnya, dapat dilihat bahwa *dataset* **airquality1** memiliki nilai N/A pada beberapa kolom. Hapus nilai N/A atau lakukan imputasi data sederhana untuk mengisi nilai N/A, lalu tampilkan 10 data pertama.
 
 ```{r}
-
+# Hapus N/A
+airquality1 <- na.omit(airquality1)
+head(airquality1, 10)
 ```
 
 ### 4. *Joining Table* (10 poin)
@@ -50,7 +58,10 @@ Dari soal sebelumnya, dapat dilihat bahwa *dataset* **airquality1** memiliki nil
 Perhatikan *dataset* **airquality1** dan **airquality2**, ada satu kolom yang sama dari kedua *dataset* tersebut. Gunakan kolom tersebut untuk menyatukan kedua *dataset* ke dalam variabel baru bernama **airquality**. Tampilkan 6 data terakhirnya.
 
 ```{r}
+library(dplyr)
 
+airquality <- inner_join(airquality1, airquality2, by = "X")
+tail(airquality)
 ```
 
 ### 5. Pemilihan Kolom (10 poin)
@@ -58,13 +69,16 @@ Perhatikan *dataset* **airquality1** dan **airquality2**, ada satu kolom yang sa
 Buat kolom baru bernama Date yang menyimpan kombinasi tanggal dari kolom Month dan Day dengan format yyyy-MM-dd (tahun = 1973). Gunakan fungsi `paste` untuk menggabungkan string dan fungsi `as.POSIXct` untuk mengubah string menjadi tanggal. Manfaatkan fungsi *help* sebaik-baiknya.
 
 ```{r}
-
+airquality$Date <- as.POSIXct(paste(1973, airquality$Month, airquality$Day, sep = "-"), format = "%Y-%m-%d")
+head(airquality)
 ```
 
 Setelah itu, buang kolom X, Day, dan Month yang tidak akan digunakan untuk membuat model. Kemudian, ubah nama kolom Solar.R menjadi Solar_Radiation. Gunakan operator pipeline.
 
 ```{r}
-
+airquality <- airquality %>%
+  select(-X, -Day, -Month) %>%
+  rename(Solar_Radiation = Solar.R)
 ```
 
 ## Data Visualization
@@ -74,7 +88,19 @@ Setelah itu, buang kolom X, Day, dan Month yang tidak akan digunakan untuk membu
 Gambarkan perubahan kualitas udara (Ozone) setiap harinya dengan menggunakan ggplot2. Kombinasikan 2 jenis geom yang sesuai dengan data yang ada.
 
 ```{r}
+library(ggplot2)
 
+ggplot(
+  data = airquality,
+  aes(
+    x = Date,
+    y = Ozone)
+  ) + geom_line(color = "blue") + 
+  geom_point(color = "red", size = 1) +
+  labs(title = "Perubahan Kualitas Udara (Ozone)",
+       x = "Waktu", 
+       y = "Kualitas Ozone") +
+  theme_minimal()
 ```
 
 ## Data Modelling
@@ -84,7 +110,12 @@ Gambarkan perubahan kualitas udara (Ozone) setiap harinya dengan menggunakan ggp
 Variabel pada dataset ini memiliki range yang berbeda-beda. Lakukan scaling agar berada di range yang sama.
 
 ```{r}
+library(scales)
 
+airquality_scaled <- airquality %>%
+  mutate(across(c(Ozone, Solar_Radiation, Wind), ~ rescale(.)))
+
+head(airquality_scaled, 5)
 ```
 
 ### 8. Data Splitting (5 poin)
@@ -92,21 +123,83 @@ Variabel pada dataset ini memiliki range yang berbeda-beda. Lakukan scaling agar
 Bagi dataset untuk *training* dan *testing* dengan proporsi *training* 80%. Pastikan dataset diacak sebelum dibagi, dan pastikan hasil acak akan tetap konsisten walaupun dijalankan berkali-kali dari perangkat berbeda sekalipun.
 
 ```{r}
+set.seed(125)
 
+data_split <- initial_split(airquality_scaled, prop = 0.8)
+airquality_train <- training(data_split)
+airquality_test <- testing(data_split)
+
+head(airquality_train, 5)
+head(airquality_test, 5)
 ```
 
-### 10. *Training* Model (10 poin)
+### 9. Buat Resep (15 poin)
+
+Buat resep untuk *training* data. Tentukan 3 variabel yang menjadi prediktor dan 1 variabel yang menjadi *outcome*. Biarkan variabel Date sebagai ID.
+
+```{r}
+airquality_resep <- recipe(Ozone ~ Solar_Radiation + Wind + Temp, data = airquality_train) %>%
+  step_normalize(all_predictors())
+airquality_train_prepped <- prep(rec, training = airquality_train)
+
+summary(airquality_resep)
+summary(airquality_train_prepped)
+```
+
+### 10. Terapkan Resep (5 poin)
+
+Terapkan resep yang sudah dibuat ke data *training* dan *testing*.
+
+```{r}
+# airquality_training
+airquality_train_processed <- bake(airquality_train_prepped, new_data = airquality_train)
+
+head(airquality_train_processed, 5)
+```
+
+```{r}
+# airquality_testing
+airquality_test_processed <- bake(airquality_train_prepped, new_data = airquality_test)
+
+head(airquality_test_processed, 5)
+```
+
+### 11. *Training* Model (10 poin)
 
 *Training* model berdasarkan data yang sudah diolah.
 
 ```{r}
+hasil_model <- linear_reg() %>%
+  set_engine("lm")
 
+airquality_trained_model <- hasil_model %>%
+  fit(Ozone ~ Solar_Radiation + Wind + Temp, data = airquality_train_processed)
+
+summary(hasil_model)
+cat("\n\n")
+summary(airquality_trained_model)
 ```
 
-### 11. Evaluasi Model (5 poin)
+### 12. Evaluasi Model (5 poin)
 
 Evaluasi performa model menggunakan data *testing* (performanya jelek juga gapapa)
 
 ```{r}
+# Evaluasi performa model menggunakan data testing
+airquality_predictions <- predict(airquality_trained_model, new_data = airquality_test_processed)
 
+# Menghitung evaluasi metrik (misalnya RMSE)
+library(yardstick)
+
+airquality_results <- airquality_test_processed %>% 
+  bind_cols(airquality_predictions) %>%
+  metrics(truth = Ozone, estimate = .pred)
+
+results <- test_processed %>%
+  bind_cols(predictions) %>%
+  metrics(truth = Ozone, estimate = .pred)
+
+print(results)
+
+print(airquality_results)
 ```

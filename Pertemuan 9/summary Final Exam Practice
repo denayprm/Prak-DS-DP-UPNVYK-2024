@@ -1,0 +1,170 @@
+Berikut adalah penjelasan rinci untuk setiap langkah dari 1 hingga 12 dalam proses analisis data menggunakan R:
+
+### 1. Import Library
+
+```r
+library(tidyverse)
+library(tidymodels)
+library(here)
+```
+
+1. `library(tidyverse)`: Memuat paket `tidyverse`, yang merupakan kumpulan paket R untuk manipulasi data dan visualisasi (seperti `ggplot2`, `dplyr`, `tidyr`, dll.).
+2. `library(tidymodels)`: Memuat paket `tidymodels`, yang menyediakan alat untuk pemodelan dan analisis data.
+3. `library(here)`: Memuat paket `here`, yang membantu dalam mengelola jalur file relatif dalam proyek R.
+
+### 2. Import Dataset
+
+```r
+airquality1 <- read_csv(here("airquality1.csv"))
+airquality2 <- read_csv(here("airquality2.csv"))
+
+head(airquality1, 10)
+head(airquality2, 10)
+```
+
+1. `airquality1 <- read_csv(here("airquality1.csv"))`: Menggunakan `read_csv()` untuk membaca file CSV `airquality1.csv` ke dalam dataframe `airquality1` dengan jalur yang dikelola oleh `here`.
+2. `airquality2 <- read_csv(here("airquality2.csv"))`: Membaca file CSV `airquality2.csv` ke dalam dataframe `airquality2`.
+3. `head(airquality1, 10)`: Menampilkan 10 baris pertama dari dataframe `airquality1`.
+4. `head(airquality2, 10)`: Menampilkan 10 baris pertama dari dataframe `airquality2`.
+
+### 3. Data Imputation
+
+```r
+airquality1_imputed <- airquality1 %>%
+  mutate(Ozone = ifelse(is.na(Ozone), median(Ozone, na.rm = TRUE), Ozone),
+         Solar.R = ifelse(is.na(Solar.R), median(Solar.R, na.rm = TRUE), Solar.R),
+         Wind = ifelse(is.na(Wind), median(Wind, na.rm = TRUE), Wind))
+
+head(airquality1_imputed, 10)
+```
+
+1. `airquality1_imputed <- airquality1 %>%`: Membuat salinan dari `airquality1` dan menyimpannya sebagai `airquality1_imputed`.
+2. `mutate(...)`: Menggunakan `mutate()` untuk menambah atau memodifikasi kolom pada dataframe.
+3. `ifelse(is.na(Ozone), median(Ozone, na.rm = TRUE), Ozone)`: Memeriksa nilai `NA` pada kolom `Ozone` dan menggantinya dengan median dari kolom `Ozone` jika nilai tersebut `NA`.
+4. Proses yang sama diterapkan pada kolom `Solar.R` dan `Wind`.
+5. `head(airquality1_imputed, 10)`: Menampilkan 10 baris pertama dari dataframe yang telah diimputasi.
+
+### 4. Joining Table
+
+```r
+airquality <- airquality1_imputed %>%
+  inner_join(airquality2, by = "X")
+
+tail(airquality, 6)
+```
+
+1. `airquality <- airquality1_imputed %>%`: Membuat dataframe baru `airquality` dari `airquality1_imputed`.
+2. `inner_join(airquality2, by = "X")`: Menggabungkan `airquality1_imputed` dengan `airquality2` berdasarkan kolom `X`. `inner_join` hanya menyimpan baris yang memiliki nilai yang cocok di kedua dataframe.
+3. `tail(airquality, 6)`: Menampilkan 6 baris terakhir dari dataframe `airquality` yang telah digabungkan.
+
+### 5. Pemilihan Kolom
+
+```r
+airquality <- airquality %>%
+  mutate(Date = as.POSIXct(paste("1973", Month, Day, sep = "-"), format = "%Y-%m-%d")) %>%
+  select(-X, -Day, -Month) %>%
+  rename(Solar_Radiation = Solar.R)
+```
+
+1. `airquality <- airquality %>%`: Mengubah dataframe `airquality`.
+2. `mutate(Date = as.POSIXct(...))`: Menambahkan kolom baru `Date`, yang menggabungkan kolom `Month` dan `Day` menjadi format tanggal. `as.POSIXct()` mengubah string menjadi objek tanggal.
+3. `paste("1973", Month, Day, sep = "-")`: Menggunakan `paste()` untuk menggabungkan tahun (1973), bulan, dan hari dalam format yang sesuai.
+4. `select(-X, -Day, -Month)`: Menghapus kolom `X`, `Day`, dan `Month` dari dataframe karena tidak diperlukan lagi.
+5. `rename(Solar_Radiation = Solar.R)`: Mengganti nama kolom `Solar.R` menjadi `Solar_Radiation`.
+
+### 6. Perubahan Kualitas Udara
+
+```r
+ggplot(airquality, aes(x = Date, y = Ozone)) +
+  geom_line(color = "blue") +
+  geom_point(color = "red") +
+  labs(title = "Perubahan Kualitas Udara (Ozone) Setiap Harinya",
+       x = "Tanggal",
+       y = "Kualitas Udara (Ozone)") +
+  theme_minimal()
+```
+
+1. `ggplot(airquality, aes(x = Date, y = Ozone))`: Membuat plot menggunakan ggplot2 dengan `Date` sebagai sumbu x dan `Ozone` sebagai sumbu y.
+2. `geom_line(color = "blue")`: Menambahkan garis ke plot untuk menunjukkan tren Ozone, menggunakan warna biru.
+3. `geom_point(color = "red")`: Menambahkan titik untuk setiap nilai Ozone, menggunakan warna merah.
+4. `labs(...)`: Menambahkan judul dan label untuk sumbu x dan y.
+5. `theme_minimal()`: Menggunakan tema minimal untuk tampilan yang bersih.
+
+### 7. Scaling Data
+
+```r
+airquality_scaled <- airquality %>%
+  mutate(across(c(Ozone, Solar_Radiation, Wind), ~ rescale(.)))
+```
+
+1. `airquality_scaled <- airquality %>%`: Membuat salinan dari dataframe `airquality` dan menyimpannya sebagai `airquality_scaled`.
+2. `mutate(...)`: Menambah atau memodifikasi kolom pada dataframe.
+3. `across(c(Ozone, Solar_Radiation, Wind), ~ rescale(.))`: Menerapkan fungsi `rescale()` pada kolom `Ozone`, `Solar_Radiation`, dan `Wind` untuk menormalkan nilai mereka ke rentang [0, 1].
+
+### 8. Data Splitting
+
+```r
+set.seed(123)
+
+data_split <- initial_split(airquality_scaled, prop = 0.8)
+train_data <- training(data_split)
+test_data <- testing(data_split)
+```
+
+1. `set.seed(123)`: Mengatur seed untuk memastikan hasil acak yang konsisten setiap kali dijalankan.
+2. `data_split <- initial_split(airquality_scaled, prop = 0.8)`: Membagi dataset `airquality_scaled` dengan proporsi 80% untuk data training dan 20% untuk data testing.
+3. `train_data <- training(data_split)`: Mengambil data training dari hasil split.
+4. `test_data <- testing(data_split)`: Mengambil data testing dari hasil split.
+
+### 9. Buat Resep
+
+```r
+rec <- recipe(Ozone ~ Solar_Radiation + Wind + Temp, data = train_data) %>%
+  step_normalize(all_predictors())
+```
+
+1. `rec <- recipe(Ozone ~ Solar_Radiation + Wind + Temp, data = train_data)`: Membuat resep untuk model dengan `Ozone` sebagai variabel target dan `Solar_Radiation`, `Wind`, dan `Temp` sebagai prediktor.
+2. `step_normalize(all_predictors())`: Menambahkan langkah normalisasi untuk semua kolom prediktor, memastikan bahwa mereka memiliki skala yang sama.
+
+### 10. Terapkan Resep
+
+```r
+train_prepped <- prep(rec, training = train_data)
+train_processed <- bake(train_prepped, new_data = train_data)
+test_processed <- bake(train_prepped, new_data = test_data)
+```
+
+1. `train_prepped <- prep(rec, training = train_data)`: Menyiapkan resep berdasarkan data training yang diberikan, menghitung parameter yang diperlukan untuk normalisasi.
+2. `train_processed <- bake(train_prepped, new_data = train_data)`: Menerapkan resep yang telah disiapkan pada data training untuk mendapatkan data yang telah diproses.
+3. `test_processed <- bake(train_prepped, new_data = test_data)`: Menerapkan resep yang sama pada data testing untuk memastikan konsistensi dalam pemrosesan.
+
+### 11. Training Model
+
+```r
+model <- linear_reg() %>%
+  set_engine("lm")
+
+trained_model <- model %>%
+  fit(Ozone ~ Solar_Radiation + Wind + Temp, data = train_processed)
+```
+
+1. `model <- linear_reg()`: Mendefinisikan model regresi linear.
+2. `set_engine("lm")`: Mengatur engine model ke "lm", yang merupakan fungsi regresi linear di R.
+3. `trained_model <- model %>% fit(...)`: Melatih model menggunakan data training yang telah diproses, dengan `Ozone` sebagai variabel target dan `Solar_Radiation`, `Wind`, dan `Temp` sebagai prediktor.
+
+### 12. Evaluasi Model
+
+```r
+predictions <- predict(trained_model, new_data = test_processed)
+
+results <- test_processed %>%
+  bind_cols(predictions) %>%
+  metrics(truth = Ozone, estimate = .pred)
+```
+
+1. `predictions <- predict(trained_model, new_data = test_processed)`: Menggunakan model yang telah dilatih untuk memprediksi nilai `Ozone` pada data testing.
+2. `results <- test_processed %>%`: Memulai proses untuk menggabungkan data testing dengan prediksi.
+3. `bind_cols(predictions)`: Menggabungkan kolom prediksi dengan data testing.
+4. `metrics(truth = Ozone, estimate = .pred)`: Menghitung metrik evaluasi (seperti RMSE) untuk membandingkan nilai sebenarnya `Ozone` dengan nilai yang diprediksi oleh model.
+
+Dengan penjelasan ini, Anda dapat memahami setiap langkah dalam analisis data ini secara rinci. Jika ada yang perlu diperjelas lebih lanjut, silakan beri tahu!
