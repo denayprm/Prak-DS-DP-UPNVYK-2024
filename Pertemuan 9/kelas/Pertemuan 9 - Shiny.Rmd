@@ -8,3 +8,176 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+0. Import Library
+
+```{r}
+library(tidyverse)
+library(tidymodels) # <- untuk membuat data splitting
+library(nnet) # <- untuk membuat model multinomial logistic regression
+```
+
+Tampilin data
+
+```{r}
+data(iris)
+View(iris)
+```
+
+1. Data Preprocessing
+
+```{r}
+# Inisial kelas
+kelas = levels(iris$Species)
+```
+
+2. Data Splitting
+
+```{r}
+set.seed(420)
+split = initial_split(iris, prop = 0.80, strata = Species)
+iris_train = split %>% training()
+iris_test = split %>% testing()
+```
+
+3. Modelling
+
+```{r}
+formula = "Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width"
+hasil_model = multinom(formula, data = iris_train)
+
+summary(hasil_model)
+```
+
+4. Data Testing
+
+```{r}
+# Type = "probs" untuk output berupa probabilitas
+hasil_prediksi_prob = predict(object = hasil_model, newdata = iris_test, type = "probs")
+hasil_prediksi_prob = round(hasil_prediksi_prob, digits = 2)
+hasil_prediksi_prob
+
+# Type = "class" untuk output berupa kelas
+hasil_prediksi = predict(object = hasil_model, newdata = iris_test, type = "class")
+hasil_prediksi
+```
+
+6. Evaluasi Model
+
+```{r}
+table(
+  Predicted = hasil_prediksi,
+  True = iris_test$Species
+)
+
+akurasi = paste0(round(((10 + 8 + 10) / 30) *100, digit = 2), "%")
+akurasi
+```
+
+7. Implementasi ke UI
+
+```{r}
+# Buat Aplikasinya
+library(shiny)
+library(bslib)
+library(bsicons) # <- Buat Icon
+```
+
+```{r}
+# Bikin UI
+ui = page_fluid(
+  titlePanel("Dataset iris"),
+  layout_columns(
+    value_box(
+      "Jumlah Setosa",
+      nrow(iris %>% filter(Species == "setosa")),
+      theme = "bg-primary-subtle"
+    ),
+    value_box(
+      "Jumlah Versicolor",
+      nrow(iris %>% filter(Species == "versicolor")),
+      theme = "bg-primary-subtle"
+    ),
+    value_box(
+      "Jumlah Virginica",
+      nrow(iris %>% filter(Species == "viginica")),
+      theme = "bg-primary-subtle"
+    ),
+  ),
+  selectInput(
+    "species",
+    "Pilih Jenis Spesies: ",
+    levels(iris$Species)
+  ),
+  tableOutput("table_iris"),
+  tags$br(), # <-Ganti Baris
+  
+  titlePanel(" Data Splitting"),
+  layout_columns(
+    value_box(
+      "Data Training",
+      nrow(iris_train),
+      showcase = bsicons::bs_icon("list-task"),
+      theme = "text-primary"
+    ),
+    value_box(
+      "Data Testing",
+      nrow(iris_test),
+      showcase = bsicons::bs_icon("list-task"),
+      theme = "text-success"
+  ),
+),
+tags$br(), # Ganti Baris
+
+titlePanel("Matriks Evaluasi"),
+value_box("Akurasi", akurasi, theme = "text-success"),
+tags$br(), # Ganti Baris
+
+titlePanel("Uji COba"),
+layout_columns(
+  numericInput("sl", "Sepal Length", value = 1),
+  numericInput("sw", "Sepal Width", value = 1),
+  numericInput("pl", "Petal Length", value = 1),
+  numericInput("pw", "Petal Width", value = 1),
+),
+actionButton("cek_klasifikasi", "Klasifikasi Spesies"),
+tags$br(), # Ganti Baris
+tags$br(), # Ganti Baris
+
+textOutput("hasil_klasifikasi"),
+tags$br(), # Ganti Baris
+)
+
+# Bikin Fungsionalitas
+server = function(input, output) {
+  output$table_iris = renderTable(
+    head(iris %>% filter(Species == input$species)),
+    width = "100%",
+    striped = TRUE # <- Buat Garis-Garis
+  )
+  
+  output$hasil_klasifikasi = renderText(
+    {
+      # Buat datafarme bedasarkan input
+      input_prediksi = data.frame(
+        Sepal.Length = input$sl,
+        Sepal.Width = input$sw,
+        Petal.Length = inpu$pl,
+        Petal.Width = input$pw
+      )
+      
+      #Prediksi Kelas
+      hasil_kelas = predict(object = hasil_model, newdata =  input_prediksi, type = "class")
+      
+      # Prediksi Probabilitas
+      hasil_prob = predict(object = hasil_model, newdata = input_prediksi, type = "prob")
+      hasil_prob = hasil_prob[hasil_kelas] * 100
+      
+      paste(kelas[hasil_kelas], hasil_prob, sep = ", ")
+    }
+  ) |> bindEvent(input$cek_klasifikasi)
+} 
+
+shinyApp(ui, server)
+```
+
