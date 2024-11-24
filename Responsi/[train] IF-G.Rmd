@@ -1,0 +1,200 @@
+---
+title: "Responsi_DS_IF-G"
+author: "Deni Permana-2210512015"
+date: "2024-11-25"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Petunjuk Responsi
+
+1. Kerjakan soal-soal dibawah ini! Jangan lupa AUTHOR diberi NAMA dan NIM (pada bagian atas soal ini)
+2. Perhatikan instruksi soal dan jawab dengan mengisi chunk dibawah soal!
+3. Waktu pengerjaan mulai pukul 10.30 hingga 12.30 dan batas submit di Spada sampai 12.40 (2 Jam + 10 menit)
+4. Tidak ada toleransi kerja sama saat responsi. 
+5. Telat pengumpulan tiap 3 menit akan ada pengurangan nilai 10 point dengan maksimal pengurangan 50 point. Telat lebih dari 15 menit atau melebihi pukul 12.50 dianggap **GUGUR**.
+6. Soal yang rancu bisa ditanyakan ke asisten. 
+7. Pastikan jawaban dapat dijalankan dengan baik sebelum submit. Jika masih ada error, cukup dicomment codenya tanpa perlu dijalankan/RUN/keluar outputnya.
+8. Jawaban dikumpulkan dengan format file NIM_Nama_Responsi_IF-G dalam bentuk PDF atau Word Document. 
+
+##Soal
+
+Load library apa saja yang akan digunakan! Lalu load dataset 'googleplay.csv' dan 'googleplay_user_review.csv'! *3 poin*
+```{r}
+# Load libraries
+library(tidyverse)
+library(tidymodels)
+
+# Load datasets
+googleplay <- read.csv("dataset/googleplay.csv")
+googleplay_reviews <- read.csv("dataset/googleplay_user_review.csv")
+```
+
+1a. Tampilkan TOP 10 Aplikasi berdasarkan banyaknya RATING secara urut dari yang terbesar! *4 poin*
+```{r}
+# TOP 10 berdasarkan banyaknya rating
+top_ratings <- googleplay %>%
+  arrange(desc(Rating))
+
+head(top_ratings, 10)
+```
+
+1b. Tampilkan TOP 10 Aplikasi berdasarkan banyaknya unduhan, dan tampilkan secara urut berdasarkan rating! Clue : data preprocessing *6 poin*
+```{r}
+# TOP 10 berdasarkan banyaknya unduhan dan diurutkan berdasarkan rating
+top_downloads <- googleplay %>%
+  mutate(Installs = as.numeric(gsub("\\D", "", Installs))) %>% # Bersihkan data
+  arrange(desc(Installs), desc(Rating))
+
+head(top_downloads, 10)
+```
+
+2. Tampilkan rata-rata RATING yang dihitung menggunakan fungsi buatan untuk setiap kategori aplikasi! *10 poin*
+```{r}
+# Fungsi untuk menghitung rata-rata rating
+average_rating <- function(data) {
+  data %>%
+    group_by(Category) %>%
+    summarize(Average_Rating = mean(Rating, na.rm = TRUE))
+}
+
+average_rating_per_category <- average_rating(googleplay)
+head(average_rating_per_category)
+```
+
+3. Berdasarkan soal nomor 2, buat plot untuk memvisualisasikan hasilnya! (Bentuk plot bebas) *10 poin*
+```{r}
+# Plot rata-rata rating
+average_rating_per_category %>%
+  ggplot(aes(x = reorder(Category, -Average_Rating), y = Average_Rating)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Rata-rata Rating per Kategori", x = "Kategori", y = "Rata-rata Rating")
+```
+
+4. Tampilkan rata-rata REVIEWS yang dihitung menggunakan fungsi buatan untuk setiap kategori aplikasi! *10 poin*
+```{r}
+# Fungsi untuk menghitung rata-rata reviews
+average_reviews <- function(data) {
+  data %>%
+    group_by(Category) %>%
+    summarize(Average_Reviews = mean(Reviews, na.rm = TRUE))
+}
+
+average_reviews_per_category <- average_reviews(googleplay)
+head(average_reviews_per_category)
+```
+
+5. Berdasarkan soal nomor 4, buat plot untuk memvisualisasikan hasilnya! (Bentuk plot bebas) *10 poin*
+```{r}
+# Plot rata-rata reviews
+average_reviews_per_category %>%
+  ggplot(aes(x = reorder(Category, -Average_Reviews), y = Average_Reviews)) +
+  geom_bar(stat = "identity", fill = "darkorange") +
+  coord_flip() +
+  labs(title = "Rata-rata Reviews per Kategori", x = "Kategori", y = "Rata-rata Reviews")
+```
+
+6. Gabungkan data googleplaystore.csv dan googleplaystore_user_reviews.csv menggunakan inner join. Tampilkan TOP 6 datanya! *10 poin*
+```{r}
+# Inner join datasets
+merged_data <- inner_join(googleplay, googleplay_reviews, by = "App")
+
+head(merged_data, 6)
+```
+
+7. Dari data pada nomor 6, tampilkan nama aplikasi, translated_review, sentiment, dan reviews berdasarkan sentiment negatif dan reviews terbanyak! *10 poin*
+```{r}
+# Filter data
+filtered_data <- merged_data %>%
+  filter(Sentiment == "Negative") %>%
+  arrange(desc(Reviews)) %>%
+  select(App, Translated_Review, Sentiment, Reviews)
+
+head(filtered_data)
+```
+
+8. Bersihkan dan rapikan data dengan membuang data yang "nan" di bagian Translated_Review. Setelah itu, data juga harus dibersihkan dari kata-kata yang mengandung stop_words (seperti: a, a's, after, dll). Tampilkan 6 data teratas dari data yang memiliki sentiment 'Positive' dengan rating lebih dari sama dengan 4.5! *10 poin*
+```{r}
+library(tidytext)
+
+# Bersihkan data
+cleaned_data <- merged_data %>%
+  filter(!is.na(Translated_Review)) %>%
+  unnest_tokens(word, Translated_Review) %>%
+  anti_join(stop_words) %>%
+  filter(Sentiment == "Positive", Rating >= 4.5) %>%
+  group_by(App)
+
+head(cleaned_data, 6)
+```
+
+9. Sentimen analisis dapat dilakukan dengan sentiment lexicon ‘nrc’. Gunakan sentiment lexicon nrc untuk mendapatkan jumlah kata untuk 10 kategori nrc (positive, negative, fear, surprise, dll). *10 poin*
+```{r}
+library(textdata)
+
+nrc_sentiments <- get_sentiments("nrc")
+nrc_word_count <- cleaned_data %>%
+  inner_join(nrc_sentiments, by = "word") %>%
+  count(sentiment, sort = TRUE)
+
+head(nrc_word_count)
+```
+
+10. Berdasarkan nomer 9 carilah banyak kata tiap kategori nrc yang dikelompokkan berdasarkan nama aplikasi *10 poin*
+```{r}
+word_count_per_app <- cleaned_data %>%
+  inner_join(nrc_sentiments, by = "word") %>%
+  count(App, sentiment, sort = TRUE)
+
+head(word_count_per_app)
+```
+
+11. Setelah mendapatkan jumlah kata tiap kategori tiap aplikasi, kita dapat mengetahui aplikasi mana yang memiliki kata dengan kategori 'surprise' terbanyak untuk tiap aplikasi. Kita akan memvisualisasikan dengan grafik batang 10 aplikasi dengan jumlah kata kategori 'surprise' terbanyak.
+```{r}
+# # Visualisasi kategori 'Surprise'
+# word_count_per_app %>%
+#   filter(sentiment == "surprise") %>%
+#   arrange(desc(n)) %>%
+#   top_n(10, n) %>%
+#   ggplot(aes(x = reorder(App, -n), y = n)) +
+#   geom_bar(stat = "identity", fill = "purple") +
+#   coord_flip() +
+#   labs(title = "10 Aplikasi dengan Kata Kategori 'Surprise' Terbanyak", x = "Aplikasi", y = "Jumlah Kata")
+
+# Visualisasi kategori 'Surprise'
+top_10_surprise <- word_count_per_app %>%
+  filter(sentiment == "surprise") %>%        # Memfilter hanya untuk kategori 'surprise'
+  arrange(desc(n)) %>%                       # Mengurutkan berdasarkan jumlah kata dalam kategori 'surprise'
+  slice_max(n, n = 10)                       # Memilih 10 aplikasi dengan jumlah kata terbanyak
+
+# Membuat grafik batang
+top_10_surprise %>%
+  ggplot(aes(x = reorder(App, -n), y = n)) + # Reorder aplikasi berdasarkan jumlah kata
+  geom_bar(stat = "identity", fill = "purple") +
+  coord_flip() +                             # Membalikkan sumbu untuk tampilan horizontal
+  labs(
+    title = "10 Aplikasi dengan Kata Kategori 'Surprise' Terbanyak",
+    x = "Aplikasi",
+    y = "Jumlah Kata"
+  ) +
+  theme_minimal()
+```
+
+12. Bagaimana perasaan kalian setelah membaca soal diatas ?
+```{r}
+cat("Soal ini cukup menantang tetapi memberikan pengalaman analisis data yang mendalam.")
+```
+
+13. Berikan kesan dan pesan untuk asisten di kelas praktikum data science IF-G ini
+```{r}
+cat("Terima kasih untuk asisten yang selalu membimbing kami. Materinya sangat membantu dan menambah wawasan!")
+```
+
+### ============================= SELESAI ============================= 
+Terimakasih telah mengikuti praktikum dari awal hingga akhir! 
+
+Kami selaku aslab ingin meminta maaf untuk semua kesalahan kami selama praktikum dari awal hingga akhir. Serta kekurangan kami dalam menyampaikan materi. Sampai jumpa dilain kesempatan. Semoga selalu diberikan kesehatan untuk kita semua~
