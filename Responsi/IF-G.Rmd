@@ -1,0 +1,103 @@
+---
+title: "Responsi_DS_IF-G"
+author: "Nama-NIM"
+date: "2023-11-22"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Petunjuk Responsi
+
+1. Kerjakan soal-soal dibawah ini! Jangan lupa AUTHOR diberi NAMA dan NIM (pada bagian atas soal ini)
+2. Perhatikan instruksi soal dan jawab dengan mengisi chunk dibawah soal!
+3. Waktu pengerjaan mulai pukul 10.30 hingga 12.30 dan batas submit di Spada sampai 12.40 (2 Jam + 10 menit)
+4. Tidak ada toleransi kerja sama saat responsi. 
+5. Telat pengumpulan tiap 3 menit akan ada pengurangan nilai 10 point dengan maksimal pengurangan 50 point. Telat lebih dari 15 menit atau melebihi pukul 12.50 dianggap **GUGUR**.
+6. Soal yang rancu bisa ditanyakan ke asisten. 
+7. Pastikan jawaban dapat dijalankan dengan baik sebelum submit. Jika masih ada error, cukup dicomment codenya tanpa perlu dijalankan/RUN/keluar outputnya.
+8. Jawaban dikumpulkan dengan format file NIM_Nama_Responsi_IF-G dalam bentuk PDF atau Word Document. 
+
+##Soal
+
+Load library apa saja yang akan digunakan! Lalu load dataset 'googleplay.csv' dan 'googleplay_user_review.csv'! *3 poin*
+```{r}
+
+```
+
+1a. Tampilkan TOP 10 Aplikasi berdasarkan banyaknya RATING secara urut dari yang terbesar! *4 poin*
+```{r}
+
+```
+
+1b. Tampilkan TOP 10 Aplikasi berdasarkan banyaknya unduhan, dan tampilkan secara urut berdasarkan rating! Clue : data preprocessing *6 poin*
+```{r}
+
+```
+
+2. Tampilkan rata-rata RATING yang dihitung menggunakan fungsi buatan untuk setiap kategori aplikasi! *10 poin*
+```{r}
+
+```
+
+3. Berdasarkan soal nomor 2, buat plot untuk memvisualisasikan hasilnya! (Bentuk plot bebas) *10 poin*
+```{r}
+
+```
+
+4. Tampilkan rata-rata REVIEWS yang dihitung menggunakan fungsi buatan untuk setiap kategori aplikasi! *10 poin*
+```{r}
+
+```
+
+5. Berdasarkan soal nomor 4, buat plot untuk memvisualisasikan hasilnya! (Bentuk plot bebas) *10 poin*
+```{r}
+
+```
+
+6. Gabungkan data googleplaystore.csv dan googleplaystore_user_reviews.csv menggunakan inner join. Tampilkan TOP 6 datanya! *10 poin*
+```{r}
+
+```
+
+7. Dari data pada nomor 6, tampilkan nama aplikasi, translated_review, sentiment, dan reviews berdasarkan sentiment negatif dan reviews terbanyak! *10 poin*
+```{r}
+
+```
+
+8. Bersihkan dan rapikan data dengan membuang data yang "nan" di bagian Translated_Review. Setelah itu, data juga harus dibersihkan dari kata-kata yang mengandung stop_words (seperti: a, a's, after, dll). Tampilkan 6 data teratas dari data yang memiliki sentiment 'Positive' dengan rating lebih dari sama dengan 4.5! *10 poin*
+```{r}
+
+```
+
+9. Sentimen analisis dapat dilakukan dengan sentiment lexicon ‘nrc’. Gunakan sentiment lexicon nrc untuk mendapatkan jumlah kata untuk 10 kategori nrc (positive, negative, fear, surprise, dll). *10 poin*
+```{r}
+
+```
+
+10. Berdasarkan nomer 9 carilah banyak kata tiap kategori nrc yang dikelompokkan berdasarkan nama aplikasi *10 poin*
+```{r}
+
+```
+
+11. Setelah mendapatkan jumlah kata tiap kategori tiap aplikasi, kita dapat mengetahui aplikasi mana yang memiliki kata dengan kategori 'surprise' terbanyak untuk tiap aplikasi. Kita akan memvisualisasikan dengan grafik batang 10 aplikasi dengan jumlah kata kategori 'surprise' terbanyak.
+```{r}
+
+```
+
+12. Bagaimana perasaan kalian setelah membaca soal diatas ?
+```{r}
+
+```
+
+13. Berikan kesan dan pesan untuk asisten di kelas praktikum data science IF-G ini
+```{r}
+
+```
+
+### ============================= SELESAI ============================= 
+Terimakasih telah mengikuti praktikum dari awal hingga akhir! 
+
+Kami selaku aslab ingin meminta maaf untuk semua kesalahan kami selama praktikum dari awal hingga akhir. Serta kekurangan kami dalam menyampaikan materi. Sampai jumpa dilain kesempatan. Semoga selalu diberikan kesehatan untuk kita semua~
