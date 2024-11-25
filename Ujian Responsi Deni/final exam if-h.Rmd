@@ -1,0 +1,174 @@
+---
+title: "Final Exam IF-H"
+output: pdf_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Final Exam
+
+## Instruction
+
+1.  Read the instruction carefully and answer accordingly
+2.  Do not cooperate with your friend
+3.  The working time is 2 hours (01.00 - 03.00 PM) with additional 10 minutes to submit your work (03.10 PM)
+4.  Submit the knitted pdf with name **Student ID_Name_Final Exam.pdf**
+
+## Import Library (5 points)
+
+Import all the required library.
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(dplyr)
+```
+
+## Import Dataset (5 points)
+
+Import zoo1.csv and zoo2.csv that are available on SPADA.
+
+```{r}
+zoo1 <- read_csv("dataset/zoo1.csv")
+zoo2 <- read_csv("dataset/zoo2.csv")
+```
+
+## Preprocessing Data
+
+### Join Table (10 points)
+
+Join the datasets based on the same column.
+
+```{r}
+zoo <- inner_join(zoo1, zoo2, by = "animal_name")
+```
+
+### Data  Imputation (20 points)
+
+The dataset contains N/A value in fins, legs, and tail columns. To fill the empty value, first, create a new dataset that is grouped by the class_type. Don't forget to create new columns to store the rounded mean of the fins, legs, and tail for each group.
+
+```{r}
+zoo_grouped_means <- zoo %>%
+  group_by(class_type) %>%
+  summarise(
+    mean_fins = round(mean(fins, na.rm = TRUE)),
+    mean_legs = round(mean(legs, na.rm = TRUE)),
+    mean_tail = round(mean(tail, na.rm = TRUE))
+  )
+head(zoo_grouped_means, 5)
+```
+
+Then, left join the zoo dataset with the grouped dataset. After that, if the value of the column is N/A, the value will be filled with the mean value of the respective class_type, otherwise, the value remains the same.
+
+```{r}
+zoo <- zoo %>%
+  left_join(zoo_grouped_means, by = "class_type") %>%
+  mutate(
+    fins = ifelse(is.na(fins), mean_fins, fins),
+    legs = ifelse(is.na(legs), mean_legs, legs),
+    tail = ifelse(is.na(tail), mean_tail, tail)
+  )
+head(zoo, 5)
+```
+
+### Choosing Columns (10 points)
+
+Discard the mean columns.
+
+```{r}
+zoo <- zoo %>%
+  select(-mean_fins, -mean_legs, -mean_tail)
+
+head(zoo, 5)
+```
+
+## Data Visualization (12 points)
+
+Create bar charts of legs for every class_type Because we have 16 class, there should be 6 charts. Use the function that we learned the other day, not manually. Feel free to use the help menu.
+
+```{r}
+zoo_type <- split(zoo, f = zoo$class_type)
+
+plot_bar_chart <- function(data, class_label) {
+  ggplot(data, aes(x = factor(legs))) +
+    geom_bar() +
+    labs(
+      title = paste("Class Type:", class_label),
+      x = "Animal Legs",
+      y = "Count"
+    ) +
+    theme_minimal()
+}
+
+bar_charts <- lapply(names(zoo_type), function(class_label) {
+  plot_bar_chart(zoo_type[[class_label]], class_label)
+})
+
+bar_charts[1:6]
+```
+
+## Data Modelling
+
+### Data Splitting (5 points)
+
+Split the zoo dataset for training and testing. Set the training ratio to 80% and split evenly based on the class_type. Show the summary of the training and testing data.
+
+```{r}
+set.seed(125)
+split <- initial_split(zoo, prop = 0.8, strata = class_type)
+training <- training(split)
+testing <- testing(split)
+
+cat("\nSummary Training \n")
+summary(training)
+cat("\nSummary Testing \n")
+summary(testing)
+```
+
+### Creating Model (13 points)
+
+Create a multinomial classification model.
+
+```{r}
+zoo_recipe <- recipe(class_type ~ ., data = training)
+
+multinom_spec <- multinom_reg() %>%
+  set_engine("nnet") %>%
+  set_mode("classification")
+
+zoo_workflow <- workflow() %>%
+  add_recipe(zoo_recipe) %>%
+  add_model(multinom_spec)
+
+zoo_model <- zoo_workflow %>%
+  fit(data = training)
+```
+
+## Evaluasi Model
+
+### Testing Model (15 points)
+
+Test the model using the testing data.
+
+```{r}
+zoo_predictions <- predict(zoo_model, testing, type = "class")
+
+zoo_results <- testing %>%
+  bind_cols(predictions = zoo_predictions)
+
+head(zoo_results, 10)
+```
+
+### Confusion Matrix (5 points)
+
+Create a confusion matrix for the test result.
+
+```{r}
+# zoo_conf_mat <- conf_mat(zoo_results)
+# zoo_conf_mat <- conf_mat(zoo_results, truth = class_type, estimate = predictions$.pred_class)
+# tidak bisa
+
+```
